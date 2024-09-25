@@ -5,6 +5,7 @@ import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutAgency } from '../../Configuration/agencySlice';
+import { useEffect } from 'react';
 
 function AgenceDashboadLayout() {
 
@@ -31,6 +32,26 @@ function AgenceDashboadLayout() {
       }
     }
   }
+
+  useEffect(() => {
+    const getCookieState = async () => {
+      try {
+        const res: AxiosResponse<any> = await axios.get(`${SERVER}/agent-state/get-cookie-state`, { withCredentials: true });
+        if (res.data.success) {
+          return true;
+        }
+      } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+          toast.warning(error.response?.data.message);
+        } else {
+          toast.error(error.message);
+          console.error(error);
+        }
+      }
+    }
+
+    if (agent) getCookieState();
+  }, []);
 
   return (
     <section className="container-fluid bg-light min-vh-100">

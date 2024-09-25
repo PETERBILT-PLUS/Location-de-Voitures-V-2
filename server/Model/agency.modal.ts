@@ -17,9 +17,12 @@ export interface IAgency extends Document {
     businessLicenseNumber: string;
     insurancePolicyNumber: string;
     subscriptionExpiresAt: Date;
+    tryFree: boolean;
     localisation: string;
     cars: ObjectId[] | string[];
     notifications: ObjectId[] | string[],
+    paypalAccountId: string;
+    isPay: boolean;
 }
 
 // Schema for agency location
@@ -39,9 +42,12 @@ const AgencySchema = new mongoose.Schema<IAgency>({
     businessLicenseNumber: { type: String, required: true },
     insurancePolicyNumber: { type: String, required: true },
     subscriptionExpiresAt: { type: Date, default: Date.now() },
+    tryFree: { type: Boolean, default: false },
     localisation: { type: String, required: false },
     cars: [{ type: mongoose.Types.ObjectId, ref: "Vehicle" }],
-    notifications: [{ type: mongoose.Types.ObjectId, ref: "Notification", default: [] }]
+    notifications: [{ type: mongoose.Types.ObjectId, ref: "Notification", default: [] }],
+    paypalAccountId: { type: String, required: true },
+    isPay: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export default mongoose.model<IAgency>("Agency", AgencySchema);

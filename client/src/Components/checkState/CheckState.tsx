@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import axios, { AxiosResponse } from 'axios';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -8,64 +8,53 @@ function CheckState() {
     const navigate = useNavigate();
     const user = useSelector((state: any) => state.auth.user.currentUser);
     const agency = useSelector((state: any) => state.auth.agency.currentAgency);
-    const [agentState, setAgentState] = React.useState<boolean | string>(() => {
-        const storedAgentState = localStorage.getItem("agent-state");
-        return storedAgentState ? JSON.parse(storedAgentState) : false;
-    });
-
-    React.useEffect(() => {
-        const handleBeforeUnload = () => {
-            // Perform actions when the user exits the page or closes the browser
-            localStorage.setItem("agent-state", "false");
-        };
-
-        window.addEventListener("beforeunload", handleBeforeUnload);
-
-        return () => {
-            // Cleanup: Remove event listener when the component unmounts
-            window.removeEventListener("beforeunload", handleBeforeUnload);
-        };
-    }, []);
+    const SERVER: string = import.meta.env.VITE_SERVER as string;
 
     React.useEffect(() => {
         const getState = async () => {
-            if (user) {
-                const res: AxiosResponse<any, any> = await axios.post("http://localhost:5000/user-state", null, { withCredentials: true });
-                console.log(res);
-                if (res.data.success === false && res.status === 403) {
-                    navigate("/login");
-                    toast.warning("Votre inscription est expiré, incriré une aute fois");
-                } else if (res.data.success) {
-                    return true;
-                } else if (res.status === 500) {
-                    navigate("/login");
-                    toast.warning("Ops Server Error");
-                }
-
-            } else if (agency) {
-                const res: AxiosResponse<any, any> = await axios.post("http://localhost:5000/agent-state", null, { withCredentials: true });
-                console.log(res);
-                if (res.data.success === false && res.status === 403) {
-                    navigate("/login-agent");
-                    toast.warning("Votre inscription est expiré, incriré une aute fois");
-                } else if (res.data.success) {
-                    if (agentState === false) {
-                        navigate("/agence-dashboard");
-                        toast.info("Bienvenue");
-                        localStorage.setItem("agent-state", "true");
-                        setAgentState(true);
-                    } else {
-                        return false;
+            try {
+                if (user) {
+                    const res: AxiosResponse<any> = await axios.get(`${SERVER}/user-state/get-state`, { withCredentials: true });
+                    if (res.data.success) {
+                        return true;
                     }
-                } else if (res.status === 500) {
-                    navigate("/login-agent");
-                    toast.error("Votre inscription est expiré, incriré une aute fois");
+                } else if (agency) {
+                    const res: AxiosResponse<any> = await axios.get(`${SERVER}/agent-state/agent-subscription-state`, { withCredentials: true });
+                    if (res.data.success) {
+                        return true;
+                    }
+                }
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    if (agency && error.response?.status === 403) {
+                        toast.warning(error.response?.data.message);
+                        navigate("/confirm-payment");
+                    } else if (user && error.response?.status === 403) {
+                        toast.warning(error.response?.data.message);
+                        navigate("/login");
+                    }
                 }
             }
-        };
+        }
+
+        const getAgency = async () => {
+            try {
+
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    toast.warning(error.response?.data.message);
+                } else {
+
+                }
+            }
+        }
 
         if (user || agency) {
             getState();
+        }
+
+        if (agency) {
+            getAgency();
         }
     }, [user, agency]);
 

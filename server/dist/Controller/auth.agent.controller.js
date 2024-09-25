@@ -23,16 +23,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.webHooks = exports.createPaymentSession = exports.logoutAgent = exports.loginAgent = exports.registerUser = void 0;
+exports.webHooks = exports.createPaymentSession = exports.logoutAgent = exports.loginAgent = exports.registerAgent = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const stripe_1 = __importDefault(require("stripe"));
 const agency_modal_js_1 = __importDefault(require("../Model/agency.modal.js"));
-const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const registerAgent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Input validation
-        const { nom, prenom, email, password, tel: phoneNumber, adress: address, city, website, numeroDinscription: registrationNumber, numeroDeLicenceCommerciale: businessLicenseNumber, numeroDePoliceDassurance: insurancePolicyNumber } = req.body;
-        if (!nom || !prenom || !email || !password || !phoneNumber || !address || !city || !registrationNumber || !businessLicenseNumber || !insurancePolicyNumber) {
+        const { nom, prenom, email, password, tel: phoneNumber, adress: address, city, website, numeroDinscription: registrationNumber, numeroDeLicenceCommerciale: businessLicenseNumber, numeroDePoliceDassurance: insurancePolicyNumber, paypalAccountId } = req.body;
+        if (!nom || !prenom || !email || !password || !phoneNumber || !address || !city || !registrationNumber || !businessLicenseNumber || !insurancePolicyNumber || !paypalAccountId) {
             return res.status(403).json({ success: false, message: "Missing Credentials" });
         }
         // Hash password
@@ -41,7 +41,7 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         // Create user object
         const newAgent = new agency_modal_js_1.default({
             nom, prenom, email, password: hashedPassword, phoneNumber, address, city, website,
-            registrationNumber, businessLicenseNumber, insurancePolicyNumber
+            registrationNumber, businessLicenseNumber, insurancePolicyNumber, paypalAccountId,
         });
         // Save user to database
         yield newAgent.save();
@@ -53,7 +53,7 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 });
-exports.registerUser = registerUser;
+exports.registerAgent = registerAgent;
 const loginAgent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password: userPass } = req.body;

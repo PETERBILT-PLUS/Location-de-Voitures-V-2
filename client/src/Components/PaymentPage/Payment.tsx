@@ -1,43 +1,85 @@
-import React from "react";
-import { Button, Container, Row, Spinner } from "react-bootstrap";
-import "./Payment.css";
 import axios, { AxiosResponse } from "axios";
+import { useEffect, useState } from "react";
+import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-
-
 function Payment() {
-    const [loading, setLoading] = React.useState<boolean>(false);
 
-    const getPayment = async () => {
-        try {
+    const agent = useSelector((state: any) => state.auth.agency.currentAgency);
+    const SERVER: string = import.meta.env.VITE_SERVER as string;
+    const [loading, setLoading] = useState<boolean>(false);
+    const [tryFree, setTryFree] = useState<boolean>();
+
+
+    useEffect(() => {
+        const getState = async () => {
             setLoading(true);
-            const res: AxiosResponse<any, any> = await axios.post("http://localhost:5000/agent/payment", null, { withCredentials: true });
-            if (res.data.url) {
-                window.location.href = res.data.url;
-            } else {
-                toast.error("Ops Une Error Dans Le Payment");
+            try {
+                const res: AxiosResponse<any, any> = await axios.get(`${SERVER}/agent-state/get-payment-state`, { withCredentials: true });
+                if (res.data.success) {
+                    setTryFree(res.data.tryFree);
+                }
+            } catch (error: any) {
+                if (axios.isAxiosError(error)) {
+                    toast.warning(error.response?.data.message);
+                } else {
+                    console.error(error);
+                    toast.error(error.message || "Ops An Error Happend");
+                }
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            toast.error("Ops Server Erreur");
-        } finally {
-            setLoading(false);
         }
 
+        if (agent) getState();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-vh-100 d-flex flex-direction-row justify-content-center align-items-center">
+                <Spinner></Spinner>
+            </div>
+        );
     }
 
     return (
-        <section className="payment-section bg-light py-5">
+        <section className="payment-section bg-light py-5 min-vh-100">
             <Container>
-                <p className="lead text-center py-5">Merci pour votre confience.<br /><br />Après votre paiement de 99 DH marocaines, vous pourrez ajouter jusqu'à trois de vos voitures sur notre plateforme pour nos clients. Profitez de cette occasion pour présenter vos véhicules de manière efficace et attrayante. Nous sommes impatients de vous voir réussir sur notre plateforme.</p>
-                <Row>
-                    <div className="payment-division col-11 col-md-7 col-lg-5 col-xlg-4 mx-auto py-2">
-                        <h2 className="title text-center py-2">Payment</h2>
-                        <h3 className="title text-center py-3">99 HD/mois</h3>
-                        <Button className="pay-btn" onClick={getPayment} disabled={loading}>
-                            {loading ? <Spinner animation="border" size="sm" role="status" aria-hidden="true" /> : "Maintenant"}
-                        </Button>
-                    </div>
+                <Row className="py-5">
+                    {/* Free Trial Card */}
+                    {!tryFree && <Col xs={12} lg={6} className="mx-auto">
+                        <Card className="py-5 px-3">
+                            <Card.Title className="text-center py-4 fs-3" style={{ color: "var(--lightBlue)" }}>Essayer Gratuitement</Card.Title>
+
+                            <Card.Body className="d-flex flex-column justify-content-evenly gap-4">
+                                <p className="text-center text-secondary">Profitez de toutes les fonctionnalités premium gratuitement pendant 30 jours. Aucune carte de crédit nécessaire.</p>
+                                <p className="text-center fs-4" style={{ color: "var(--highBlue)" }}>Essayer Maintenant</p>
+                                <hr />
+                                <div className="d-flex flex-direction-row justify-content-center">
+                                    <button className="btn btn-info align-self-start text-white py-3 px-4">Essayer Gratuitement</button>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>}
+
+                    {/* Paid Trial Card */}
+                    <Col xs={12} lg={6} className="mx-auto">
+                        <Card className="py-5 px-3">
+                            <Card.Title className="text-center py-4 fs-3" style={{ color: "var(--lightBlue)" }}>Accès Premium Immédiat</Card.Title>
+
+                            <Card.Body className="d-flex flex-column justify-content-evenly gap-4">
+                                <p className="text-center text-secondary">
+                                    Passez directement à l'expérience premium pour seulement 9,9$ sans attendre.
+                                </p>
+                                <p className="text-center fs-4" style={{ color: "var(--highBlue)" }}>Profiter de l'Offre</p>
+                                <hr />
+                                <div className="d-flex flex-direction-row justify-content-center">
+                                    <button className="btn btn-info align-self-start text-white py-3 px-4">Essayer Avec 9,9$</button>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 </Row>
             </Container>
         </section>

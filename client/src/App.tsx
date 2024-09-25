@@ -17,9 +17,17 @@ import Register from './Components/Register/Register/Register.tsx';
 import Login from './Components/Login/UserLogin/Login.tsx';
 import UserReservations from './Components/UserReservations/UserReservations.tsx';
 import UserProfile from './Components/UserProfile/UserProfile.tsx';
+import PaymentConfirm from "./Components/Payment/Payment.tsx";
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import CheckAgent from './Components/CheckAgent/CheckAgent.tsx';
 
 
 function App() {
+  const initialOptions = {
+    clientId: "AYXgG14aJg2xs8JHSbgvpA1LMSAZZESeD8D8bPjZuUK5PyhNc8c5XN0489yQ35EX14IoEmNgy-G99i5F",
+    currency: "USD",
+    intent: "capture",
+  };
   const router = createBrowserRouter(createRoutesFromElements(
     <Route element={<CheckState />}>
 
@@ -43,17 +51,20 @@ function App() {
         <Route path="profile" element={<UserProfile />} />
 
 
-
-        <Route element={null}>
         <Route path="cars/:id" element={<SingleCar />}></Route>
-          <Route path="payment" element={<Payment />}></Route>
+        <Route path="payment" element={<Payment />}></Route>
+
+        <Route element={<CheckAgent />}>
+          <Route path="confirm-payment" element={<PaymentConfirm />}></Route>
         </Route>
       </Route>
     </Route>
   ));
   return (
     <>
-      <RouterProvider router={router} />
+      <PayPalScriptProvider options={initialOptions}>
+        <RouterProvider router={router} />
+      </PayPalScriptProvider>
     </>
   )
 }

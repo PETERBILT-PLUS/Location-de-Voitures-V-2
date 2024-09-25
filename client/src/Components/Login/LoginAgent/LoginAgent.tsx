@@ -56,7 +56,7 @@ function LoginAgent() {
             <Container>
                 <h3 className="text-light text-center title py-5">Login Agence</h3>
                 <Row>
-                    <div className="col-11 col-md-6 col-lg-5 col-xlg-4 mx-auto">
+                    <div className="col-11 col-md-6 col-lg-4 col-xlg-3 mx-auto">
                         <Form className="agent-register-form" onSubmit={handleSubmit} autoComplete="off">
                             <Form.Control className="input-form" type="email" value={values.email} onBlur={handleBlur} onChange={handleChange} placeholder="email" name="email" />
                             {errors.email && touched.email && <h6 className="text-danger error-header">{errors.email}</h6>}

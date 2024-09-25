@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { faCar } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarAlt, faBell } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Card, Col, Container, Nav, NavDropdown, Navbar, Row, Button } from 'react-bootstrap';
+import { Card, Col, Container, Nav, NavDropdown, Navbar, Row, Button, Spinner } from 'react-bootstrap';
 import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
@@ -40,6 +40,14 @@ function AdminDashboard() {
         getDashboard();
     }, []);
 
+    if (loading) {
+        return (
+            <div className="bg-white min-vh-100 d-flex flex-row justify-centen-center align-items-center">
+                <Spinner></Spinner>
+            </div>
+        );
+    }
+
     return (
         <div className="bg-light">
             <Container className="py-5">
@@ -65,7 +73,7 @@ function AdminDashboard() {
                         </Card>
                     </Col>
                     <Col>
-                        <Link to="/">
+                        <Link to="/" style={{ textDecoration: "none" }}>
                             <Card className="shadow h-100">
                                 <Card.Header className="py-3 text-center bg-danger text-white">Notifications</Card.Header>
                                 <Card.Body className="d-flex flex-column justify-content-center align-items-center">

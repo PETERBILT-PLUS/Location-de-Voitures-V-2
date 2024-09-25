@@ -13,6 +13,7 @@ interface IRegisterAgent {
     numeroDInscription: string;
     numeroDeLicenceCommerciale: string;
     numeroDePoliceDAssurance: string;
+    paypalAccountId: string;
 }
 
 export const registerAgentSchema = yup.object<IRegisterAgent>().shape({
@@ -28,6 +29,7 @@ export const registerAgentSchema = yup.object<IRegisterAgent>().shape({
     numeroDinscription: yup.string().required("Veuillez saisir votre numéro d'inscription"),
     numeroDeLicenceCommerciale: yup.string().required("Veuillez saisir votre numéro de licence commerciale"),
     numeroDePoliceDassurance: yup.string().required("Veuillez saisir votre numéro de police d'assurance"),
+    paypalAccountId: yup.string().required("Le numero du compte Paypal est important"),
 });
 
 interface ILoginAgent {

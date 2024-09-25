@@ -19,8 +19,11 @@ const AgencySchema = new mongoose_1.default.Schema({
     businessLicenseNumber: { type: String, required: true },
     insurancePolicyNumber: { type: String, required: true },
     subscriptionExpiresAt: { type: Date, default: Date.now() },
+    tryFree: { type: Boolean, default: false },
     localisation: { type: String, required: false },
     cars: [{ type: mongoose_1.default.Types.ObjectId, ref: "Vehicle" }],
-    notifications: [{ type: mongoose_1.default.Types.ObjectId, ref: "Notification", default: [] }]
+    notifications: [{ type: mongoose_1.default.Types.ObjectId, ref: "Notification", default: [] }],
+    paypalAccountId: { type: String, required: true },
+    isPay: { type: Boolean, default: false },
 }, { timestamps: true });
 exports.default = mongoose_1.default.model("Agency", AgencySchema);

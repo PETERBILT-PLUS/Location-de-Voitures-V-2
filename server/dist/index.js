@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.checkAndRefundAgencies = void 0;
 const express_1 = __importDefault(require("express"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
@@ -23,9 +24,16 @@ const auth_agent_router_js_1 = __importDefault(require("./Routes/auth.agent.rout
 const checkAgent_router_js_1 = __importDefault(require("./Routes/checkAgent.router.js"));
 const cars_router_js_1 = __importDefault(require("./Routes/cars.router.js"));
 const user_router_js_1 = __importDefault(require("./Routes/user.router.js"));
+const paypal_js_1 = require("./utils/paypal.js"); // Import PayPal functions
+const node_cron_1 = __importDefault(require("node-cron"));
+const agency_modal_js_1 = __importDefault(require("./Model/agency.modal.js"));
+const reservation_model_js_1 = __importDefault(require("./Model/reservation.model.js"));
+const notification_modal_js_1 = __importDefault(require("./Model/notification.modal.js"));
+const userStateRouter_router_js_1 = require("./Routes/userStateRouter.router.js");
 (0, dotenv_1.config)();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5000;
+const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
@@ -34,12 +42,98 @@ app.use((0, cors_1.default)({
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 app.use(body_parser_1.default.urlencoded({ extended: true }));
+// Define your routes
 app.use("/agent-state", checkAgent_router_js_1.default);
+app.use("/user-state", userStateRouter_router_js_1.userStateRouter);
 app.use("/auth", auth_router_js_1.default);
 app.use("/agent", auth_agent_router_js_1.default);
 app.use("/cars", cars_router_js_1.default);
 app.use("/user", user_router_js_1.default);
+// PayPal create order route
+app.post("/my-server/create-paypal-order", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { cart } = req.body; // Use the cart information passed from the front-end
+        const { jsonResponse, httpStatusCode } = yield (0, paypal_js_1.createOrder)(cart);
+        res.status(httpStatusCode).json(jsonResponse);
+    }
+    catch (error) {
+        console.error("Failed to create order:", error);
+        res.status(500).json({ error: "Failed to create order." });
+    }
+}));
+// PayPal capture order route
+app.post('/api/orders/:orderID/capture', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { orderID } = req.params;
+    const { agency_id } = req.body;
+    try {
+        // Your logic to capture the order
+        const captureResponse = yield (0, paypal_js_1.captureOrder)(orderID, agency_id); // Use the captureOrder function you imported
+        // Handle successful capture response
+        if (captureResponse.status === 'COMPLETED') {
+            res.status(200).json(captureResponse);
+        }
+        else {
+            res.status(500).json({ error: 'Failed to capture order.' });
+        }
+    }
+    catch (error) {
+        console.error("Error capturing order:", error);
+        res.status(500).json({
+            error: 'Failed to capture order.',
+            message: error.message || 'An unexpected error occurred.',
+            details: error.details || 'No additional details available.',
+        });
+    }
+}));
+// Function to check and refund agencies
+const checkAndRefundAgencies = () => __awaiter(void 0, void 0, void 0, function* () {
+    const now = new Date();
+    const agencies = yield agency_modal_js_1.default.find({
+        subscriptionExpiresAt: { $lt: now },
+        isPay: true,
+    });
+    for (const agency of agencies) {
+        const reservations = yield reservation_model_js_1.default.find({
+            agency: agency._id,
+            timeStart: { $gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) }, // Last 30 days
+        });
+        if (reservations.length === 0) {
+            try {
+                yield (0, paypal_js_1.refundOrder)(agency.paypalAccountId);
+                agency.isPay = false;
+                yield agency.save();
+                const notification = new notification_modal_js_1.default({
+                    recipientModel: agency._id,
+                    message: "Vous avez reçu votre remboursement de 99 DH",
+                });
+                yield notification.save();
+            }
+            catch (error) {
+                console.error(`Failed to refund agency ${agency.nom}:`, error);
+            }
+        }
+    }
+});
+exports.checkAndRefundAgencies = checkAndRefundAgencies;
+// Schedule a cron job to check and refund agencies daily at midnight
+node_cron_1.default.schedule("0 0 * * *", () => {
+    (0, exports.checkAndRefundAgencies)().catch((error) => {
+        console.error("Error during refund check:", error);
+    });
+});
+// Render checkout page with client id
+app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        res.render("checkout", {
+            clientId: PAYPAL_CLIENT_ID,
+        });
+    }
+    catch (error) {
+        res.status(500).send(error.message);
+    }
+}));
+// Start server
 app.listen(PORT, () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, connectToDatabase_js_1.connectToDatabase)();
-    console.log(`server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 }));

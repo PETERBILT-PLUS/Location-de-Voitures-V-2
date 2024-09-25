@@ -12,13 +12,13 @@ agentRouter.get("/get-agent-profile", protectAgentRoute_js_1.protectAgentRoute, 
 agentRouter.get("/get-cars", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.getCars);
 agentRouter.get("/get-single-car/:id", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.getSingleCar);
 agentRouter.get("/get-dashboard", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.getDashboard);
-agentRouter.post("/register", auth_agent_controller_js_1.registerUser);
+agentRouter.post("/register", auth_agent_controller_js_1.registerAgent);
 agentRouter.post("/login", auth_agent_controller_js_1.loginAgent);
 agentRouter.post("/logout", auth_agent_controller_js_1.logoutAgent);
 agentRouter.post("/updateProfile", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.updateAgentProfile);
 agentRouter.put("/edit-car", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.editVehicule);
 agentRouter.delete("/delete-car/:car_id", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.deleteCar);
 // this is for stripe
-agentRouter.post("/payment", protectAgentRoute_js_1.protectAgentRoute, auth_agent_controller_js_1.createPaymentSession);
-agentRouter.post("/hooks", express_1.default.raw({ type: "application/json" }), auth_agent_controller_js_1.webHooks);
+//agentRouter.post("/payment", protectAgentRoute, createPaymentSession);
+//agentRouter.post("/hooks", express.raw({ type: "application/json" }), webHooks);
 exports.default = agentRouter;

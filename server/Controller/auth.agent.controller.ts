@@ -5,15 +5,15 @@ import Stripe from "stripe";
 import agencyModal from "../Model/agency.modal.js";
 
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerAgent = async (req: Request, res: Response) => {
     try {
         // Input validation
         const {
             nom, prenom, email, password, tel: phoneNumber, adress: address, city, website, numeroDinscription: registrationNumber,
-            numeroDeLicenceCommerciale: businessLicenseNumber, numeroDePoliceDassurance: insurancePolicyNumber
+            numeroDeLicenceCommerciale: businessLicenseNumber, numeroDePoliceDassurance: insurancePolicyNumber, paypalAccountId
         } = req.body;
 
-        if (!nom || !prenom || !email || !password || !phoneNumber || !address || !city || !registrationNumber || !businessLicenseNumber || !insurancePolicyNumber) {
+        if (!nom || !prenom || !email || !password || !phoneNumber || !address || !city || !registrationNumber || !businessLicenseNumber || !insurancePolicyNumber || !paypalAccountId) {
             return res.status(403).json({ success: false, message: "Missing Credentials" });
         }
 
@@ -24,7 +24,7 @@ export const registerUser = async (req: Request, res: Response) => {
         // Create user object
         const newAgent = new agencyModal({
             nom, prenom, email, password: hashedPassword, phoneNumber, address, city, website,
-            registrationNumber, businessLicenseNumber, insurancePolicyNumber
+            registrationNumber, businessLicenseNumber, insurancePolicyNumber, paypalAccountId,
         });
 
         // Save user to database
