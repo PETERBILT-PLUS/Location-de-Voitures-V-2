@@ -207,7 +207,6 @@ const getUserReservations = (req, res) => __awaiter(void 0, void 0, void 0, func
         });
         if (!user)
             return res.status(404).json({ success: false, message: "Utilisateur pas Trouvé" });
-        console.log(user.reservations);
         if (user.reservations.length === 0)
             return res.status(204).json({ success: true, reservations: [] });
         res.status(200).json({ success: true, reservations: user.reservations });

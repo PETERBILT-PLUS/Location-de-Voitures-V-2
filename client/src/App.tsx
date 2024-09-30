@@ -20,6 +20,12 @@ import UserProfile from './Components/UserProfile/UserProfile.tsx';
 import PaymentConfirm from "./Components/Payment/Payment.tsx";
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import CheckAgent from './Components/CheckAgent/CheckAgent.tsx';
+import CheckUser from './Components/CheckUser/CheckUser.tsx';
+import AgencyNotifications from './Components/AgencyNotifications/AgencyNotifications.tsx';
+import AgencyReservations from './Components/AgencyReservations/AgencyReservations.tsx';
+import Apropos from './Components/Apropos/Apropos.tsx';
+import PolitiqueConfidentialite from './Components/PolitiqueConfidentialite/PolitiqueConfidentialite.tsx';
+import ConditionsGenerales from './Components/ConditionsGenerales/ConditionsGenerales.tsx';
 
 
 function App() {
@@ -28,6 +34,7 @@ function App() {
     currency: "USD",
     intent: "capture",
   };
+
   const router = createBrowserRouter(createRoutesFromElements(
     <Route element={<CheckState />}>
 
@@ -38,6 +45,8 @@ function App() {
         <Route path="vehicules" element={<AgenceAdminVehicules />}></Route>
         <Route path="create-listing" element={<CreateListing />}></Route>
         <Route path="edit-vehicule/:id" element={<EditVehicule />}></Route>
+        <Route path="notifications" element={<AgencyNotifications />}></Route>
+        <Route path="reservations" element={<AgencyReservations />}></Route>
       </Route>
 
       {/* For the user routes */}
@@ -47,14 +56,20 @@ function App() {
         <Route path="login-agent" element={<LoginAgent />}></Route>
         <Route path="register" element={<Register />}></Route>
         <Route path="login" element={<Login />}></Route>
-        <Route path="mes-reservations" element={<UserReservations />} />
-        <Route path="profile" element={<UserProfile />} />
+        <Route path="a-propos" element={<Apropos />}></Route>
+        <Route path="politique-confidentialite" element={<PolitiqueConfidentialite />}></Route>
+        <Route path="conditions-generales" element={<ConditionsGenerales />}></Route>
 
 
-        <Route path="cars/:id" element={<SingleCar />}></Route>
-        <Route path="payment" element={<Payment />}></Route>
+
+        <Route element={<CheckUser />}>
+          <Route path="mes-reservations" element={<UserReservations />} />
+          <Route path="profile" element={<UserProfile />} />
+          <Route path="cars/:id" element={<SingleCar />}></Route>
+        </Route>
 
         <Route element={<CheckAgent />}>
+          <Route path="payment" element={<Payment />}></Route>
           <Route path="confirm-payment" element={<PaymentConfirm />}></Route>
         </Route>
       </Route>

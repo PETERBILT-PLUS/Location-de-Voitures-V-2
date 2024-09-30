@@ -96,20 +96,27 @@ function Header() {
                         <Nav className="m-auto">
                             <Nav.Link as={Link} to="/">
                                 <CustomNavLink to="/" className={({ isActive }) => (isActive ? "link-item-active" : "link-item")}>
-                                    ACCEUIL
+                                    Acceuil
+                                </CustomNavLink>
+                            </Nav.Link>
+                            <Nav.Link as={Link} to="/a-propos">
+                                <CustomNavLink to="/a-propos" className={({ isActive }) => (isActive ? "link-item-active" : "link-item")}>
+                                    A-Propos
+                                </CustomNavLink>
+                            </Nav.Link>
+                            <Nav.Link as={Link} to="/politique-confidentialite">
+                                <CustomNavLink to="/politique-confidentialite" className={({ isActive }) => (isActive ? "link-item-active" : "link-item")}>
+                                    Politique-Confidentialite
+                                </CustomNavLink>
+                            </Nav.Link>
+                            <Nav.Link as={Link} to="/conditions-generales">
+                                <CustomNavLink to="/conditions-generales" className={({ isActive }) => (isActive ? "link-item-active" : "link-item")}>
+                                    Conditions-Generales
                                 </CustomNavLink>
                             </Nav.Link>
                         </Nav>
                         <Nav className="gap-4 flex flex-row align-items-center">
                             {authUser ? (
-                                <>
-                                    <NavDropdown title="Mon Compte" id="collapsible-nav-dropdown">
-                                        <NavDropdown.Item as={Link} to="/mes-reservations">Mes Réservations</NavDropdown.Item>
-                                        <NavDropdown.Item as={Link} to="/profile">Profil</NavDropdown.Item>
-                                    </NavDropdown>
-                                    <button type="button" className="create-account-btn" onClick={handleLogout}>Déconnecter</button>
-                                </>
-                            ) : authAgency ? (
                                 <>
                                     <NavDropdown title="Mon Compte" id="collapsible-nav-dropdown">
                                         <NavDropdown.Item as={Link} to="/mes-reservations">Mes Réservations</NavDropdown.Item>

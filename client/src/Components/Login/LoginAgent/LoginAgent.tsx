@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import React from 'react'
+import React, { useState } from 'react'
 import { Container, Form, Row } from 'react-bootstrap';
 import { LoginAgentSchema } from '../../../Configuration/Schema';
 import { toast } from 'react-toastify';
@@ -7,7 +7,7 @@ import SubmitButton from '../../../SubComponents/SubmitButton/SubmitButton.tsx';
 import "./LoginAgent.css";
 import { Link, useNavigate } from 'react-router-dom';
 import axios, { AxiosResponse } from 'axios';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginAgency } from '../../../Configuration/agencySlice.ts';
 import { logout } from '../../../Configuration/userSlice.ts';
 
@@ -16,23 +16,26 @@ function LoginAgent() {
     const [loading, setLoading] = React.useState<boolean>(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [state, setState] = useState<boolean>();
+    const agency = useSelector((state: any) => state.auth.agency.currentAgency);
 
     const onSubmit = async (values: any, actions: any) => {
         try {
             setLoading(true);
             const res: AxiosResponse<any, any> = await axios.post("http://localhost:5000/agent/login", values, { withCredentials: true });
             if (res.data.success) {
+                if (!agency) {
+                    setState(true);
+                }
                 toast.success("Login Succès");
                 dispatch(logout());
                 dispatch(loginAgency(res.data.agency));
                 actions.resetForm();
-                navigate("/agence-dashboard");
-            } else if (res.status === 400) {
-                toast.warning("Remplissez tous les champs");
-                return false;
-            } else {
-                toast.error("Ops Server Error");
-                return false;
+                if (state) {
+                    navigate("/payment");
+                } else {
+                    navigate("/agence-dashboard");
+                }
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {

@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDashboard = exports.editVehicule = exports.getSingleCar = exports.deleteCar = exports.getCars = exports.updateAgentProfile = exports.getAgentProfile = void 0;
+exports.acceptDeclineReservation = exports.getReservations = exports.updateNotifications = exports.getNotifications = exports.getDashboard = exports.editVehicule = exports.getSingleCar = exports.deleteCar = exports.getCars = exports.updateAgentProfile = exports.getAgentProfile = void 0;
 const agency_modal_js_1 = __importDefault(require("../Model/agency.modal.js"));
 const vehicule_model_js_1 = __importDefault(require("../Model/vehicule.model.js"));
 const notification_modal_js_1 = __importDefault(require("../Model/notification.modal.js"));
 const reservation_model_js_1 = __importDefault(require("../Model/reservation.model.js"));
+const socket_js_1 = require("../socket/socket.js");
 const getAgentProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const agentId = req === null || req === void 0 ? void 0 : req.agent._id;
@@ -153,10 +154,10 @@ const getDashboard = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     var _c;
     try {
         const agent_id = (_c = req.agent) === null || _c === void 0 ? void 0 : _c._id;
-        const getNotifications = yield notification_modal_js_1.default.find({ recipient: agent_id });
+        const getNotifications = yield notification_modal_js_1.default.find({ recipient: agent_id, isRead: false });
         const agentExist = yield agency_modal_js_1.default.findById(agent_id).populate("cars");
         const carsExist = agentExist === null || agentExist === void 0 ? void 0 : agentExist.cars;
-        const reservations = yield reservation_model_js_1.default.find({ agency: agent_id });
+        const reservations = yield reservation_model_js_1.default.find({ agency: agent_id, status: "En Attente" });
         res.status(200).json({
             success: true, data: {
                 notification: getNotifications.length,
@@ -171,3 +172,78 @@ const getDashboard = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getDashboard = getDashboard;
+const getNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _d;
+    try {
+        const agency_id = (_d = req.agent) === null || _d === void 0 ? void 0 : _d._id;
+        const agency = yield agency_modal_js_1.default.findById(agency_id).populate("notifications");
+        if (!agency)
+            return res.status(404).json({ success: false, message: "Agence Pas Trouvé" });
+        const notifications = agency.notifications;
+        if (!notifications || notifications.length === 0) {
+            return res.status(204).json({ success: true, data: [] });
+        }
+        res.status(200).json({ success: true, data: notifications });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur Interne du Serveur" });
+    }
+});
+exports.getNotifications = getNotifications;
+const updateNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _e;
+    try {
+        const agency_id = (_e = req.agent) === null || _e === void 0 ? void 0 : _e._id;
+        const updateNotifications = yield notification_modal_js_1.default.updateMany({ recipient: agency_id, recipientModel: 'Agency', isRead: false }, // Filter criteria
+        { $set: { isRead: true } } // Set the isRead field to true
+        );
+        res.status(200).json({ successs: true });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur Interne du Serveur" });
+    }
+});
+exports.updateNotifications = updateNotifications;
+const getReservations = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _f;
+    try {
+        const agency_id = (_f = req.agent) === null || _f === void 0 ? void 0 : _f._id;
+        const reservations = yield reservation_model_js_1.default.find({ agency: agency_id }).populate("car").populate("agency").populate("user");
+        if (!reservations || reservations.length === 0)
+            return res.status(204).json({ success: true, message: "Pas de Résérvations" });
+        res.status(200).json({ success: true, data: reservations });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur Interne du Serveur" });
+    }
+});
+exports.getReservations = getReservations;
+const acceptDeclineReservation = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _g;
+    try {
+        const agency_id = (_g = req.agent) === null || _g === void 0 ? void 0 : _g._id;
+        const { reservation_id, status, userId } = req.body;
+        if (!reservation_id || !status || !userId)
+            return res.status(400).json({ success: false, message: "Manque D'informations" });
+        const agencyExist = yield agency_modal_js_1.default.findById(agency_id);
+        if (!agencyExist)
+            return res.status(404).json({ success: false, message: "Agence Pas Trouvé" });
+        const reservation = yield reservation_model_js_1.default.findOneAndUpdate({ agency: agencyExist._id, _id: reservation_id }, {
+            status: status,
+        }, { new: true });
+        const newReservation = yield reservation_model_js_1.default.findOne({ agency: agencyExist._id, _id: reservation_id }).populate("car").populate("agency");
+        const receiver = (0, socket_js_1.getUserSocketId)(userId);
+        if (receiver !== undefined) {
+            socket_js_1.io.to(receiver).emit("acceptDelineReservation", newReservation);
+        }
+        res.status(200).json({ success: true, reservation: reservation });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur Interne du Serveur" });
+    }
+});
+exports.acceptDeclineReservation = acceptDeclineReservation;

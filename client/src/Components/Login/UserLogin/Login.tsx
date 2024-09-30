@@ -5,7 +5,7 @@ import SubmitButton from '../../../SubComponents/SubmitButton/SubmitButton';
 import "./Login.css";
 import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginUser } from '../../../Configuration/userSlice';
 
@@ -59,7 +59,7 @@ function Login() {
             <Container>
                 <h3 className="text-center text-white title py-5">Connexion</h3>
                 <Row>
-                    <div className="col-11 col-md-6 col-lg-5 col-xlg-4 mx-auto">
+                    <div className="col-11 col-md-6 col-lg-4 mx-auto">
                         <Form onSubmit={handleSubmit} className="agent-register-form">
                             <Form.Group className="py-2">
                                 <Form.Label htmlFor="email">Email:</Form.Label>
@@ -90,6 +90,7 @@ function Login() {
                             </Form.Group>
 
                             <SubmitButton loading={isSubmitting} disabled={isSubmitting} />
+                            <p className="text-secondary pt-4">Vous Avez pas De compte <Link to="/register">Crée un compte</Link></p>
                         </Form>
                     </div>
                 </Row>

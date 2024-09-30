@@ -6,7 +6,7 @@ export const getUserState = async (req: Request, res: Response) => {
         const token = req.cookies.token;
 
         if (!token) {
-            return res.status(403).json({ success: false, message: "Pas Autorisé: Token Pas Trouvé" });
+            return res.status(403).json({ success: false, message: "Token Pas Trouvé, Veiller Inscrire a Nouveau" });
         }
 
         const JWT_SECRET = process.env.JWT_SECRET;

@@ -21,8 +21,9 @@ const AgencySchema = new mongoose_1.default.Schema({
     subscriptionExpiresAt: { type: Date, default: Date.now() },
     tryFree: { type: Boolean, default: false },
     localisation: { type: String, required: false },
-    cars: [{ type: mongoose_1.default.Types.ObjectId, ref: "Vehicle" }],
+    cars: [{ type: mongoose_1.default.Types.ObjectId, ref: "Vehicle", default: [] }],
     notifications: [{ type: mongoose_1.default.Types.ObjectId, ref: "Notification", default: [] }],
+    lastPay: { type: Date, default: new Date(Date.now()) },
     paypalAccountId: { type: String, required: true },
     isPay: { type: Boolean, default: false },
 }, { timestamps: true });

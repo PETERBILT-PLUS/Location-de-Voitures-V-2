@@ -11,7 +11,7 @@ function Payment() {
                             <Card.Title style={{ color: "var(--lightBlue)" }} className="fs-3 py-4">Paiement de 9,9$</Card.Title>
                             <Card.Body className="gap-5">
                                 <p className="ps-6 pb-4 text-secondary">
-                                    Accédez à toutes les fonctionnalités premium de l'application en effectuant un paiement unique de 9,9$. Une fois votre paiement confirmé, vous pourrez profiter de tous les outils avancés sans limitations.
+                                    Passez directement à l'expérience premium pour seulement 9,9$ sans attendre. Si vous n'avez pas de réservation, vous serez remboursé.
                                 </p>
                                 {/* PayPal Button Integration */}
                                 <MyPaypalButton />

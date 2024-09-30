@@ -112,6 +112,7 @@ const captureOrder = (orderID, agency_id) => __awaiter(void 0, void 0, void 0, f
             const agency = yield agency_modal_1.default.findByIdAndUpdate(agency_id, {
                 subscriptionExpiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
                 isPay: true,
+                lastPay: new Date(),
             }, { new: true });
             return responseData; // Return successful capture
         }

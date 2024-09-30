@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { connectToDatabase } from "./db/connectToDatabase.js";
@@ -15,10 +15,10 @@ import agencyModal from "./Model/agency.modal.js";
 import reservationModel, { IReservation } from "./Model/reservation.model.js";
 import notificationModal from "./Model/notification.modal.js";
 import { userStateRouter } from "./Routes/userStateRouter.router.js";
+import { app, server } from "./socket/socket.js";
 
 config();
 
-const app: Express = express();
 const PORT = process.env.PORT || 5000;
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 
@@ -32,8 +32,11 @@ app.use(cors({
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Define your routes
+//this is fot the state
 app.use("/agent-state", checkAgent);
 app.use("/user-state", userStateRouter);
+
+
 app.use("/auth", authRouter);
 app.use("/agent", agentRouter);
 app.use("/cars", carsRouter);
@@ -82,6 +85,7 @@ export const checkAndRefundAgencies = async () => {
 
     const agencies = await agencyModal.find({
         subscriptionExpiresAt: { $lt: now },
+        lastPay: { $lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
         isPay: true,
     });
 
@@ -98,9 +102,8 @@ export const checkAndRefundAgencies = async () => {
                 await agency.save();
                 const notification = new notificationModal({
                     recipientModel: agency._id,
-                    message: "Vous avez reçu votre remboursement de 99 DH",
+                    message: "Vous avez reçu votre remboursement de 9,9$",
                 });
-
                 await notification.save();
             } catch (error) {
                 console.error(`Failed to refund agency ${agency.nom}:`, error);
@@ -128,7 +131,7 @@ app.get("/", async (req: Request, res: Response) => {
 });
 
 // Start server
-app.listen(PORT, async () => {
+server.listen(PORT, async () => {
     await connectToDatabase();
     console.log(`Server is running on port ${PORT}`);
 });

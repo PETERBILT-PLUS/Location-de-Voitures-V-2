@@ -70,7 +70,7 @@ function Payment() {
 
                             <Card.Body className="d-flex flex-column justify-content-evenly gap-4">
                                 <p className="text-center text-secondary">
-                                    Passez directement à l'expérience premium pour seulement 9,9$ sans attendre.
+                                    Passez directement à l'expérience premium pour seulement 9,9$ sans attendre. Si vous n'avez pas de réservation, vous serez remboursé.
                                 </p>
                                 <p className="text-center fs-4" style={{ color: "var(--highBlue)" }}>Profiter de l'Offre</p>
                                 <hr />

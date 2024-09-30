@@ -142,6 +142,7 @@ export const captureOrder = async (orderID: string, agency_id: string): Promise<
       const agency: IAgency | null = await agencyModal.findByIdAndUpdate(agency_id, {
         subscriptionExpiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
         isPay: true,
+        lastPay: new Date(),
       }, { new: true });
       return responseData; // Return successful capture
     } else {

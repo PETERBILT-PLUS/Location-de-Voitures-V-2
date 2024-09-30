@@ -4,7 +4,7 @@ import { IRegister, registerSchema } from "../../../Configuration/registerSchema
 import SubmitButton from "../../../SubComponents/SubmitButton/SubmitButton";
 import axios, { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
 
 function Register() {
@@ -140,6 +140,7 @@ function Register() {
                             </Form.Group>
 
                             <SubmitButton disabled={isSubmitting} loading={isSubmitting} />
+                            <p className="pt-4 text-secondary">Vous Avez Déja un compte <Link to="/login">Connection</Link></p>
                         </Form>
                     </div>
                 </Row>

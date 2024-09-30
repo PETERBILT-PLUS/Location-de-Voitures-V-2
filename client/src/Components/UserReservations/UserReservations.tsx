@@ -2,13 +2,41 @@ import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { Col, Container, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { useSocketContext } from "../../Context/SocketContext";
 
 function UserReservations() {
     const SERVER: string = import.meta.env.VITE_SERVER as string;
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const socket = useSocketContext();
 
     console.log(data);
+
+
+    useEffect(() => {
+        if (socket) {
+            // Define the event handler separately
+            const handleReservationUpdate = (reservation: any) => {
+                console.log(reservation);
+                const newData = data.map((elem: any) => 
+                    String(elem._id) === String(reservation._id) 
+                        ? { ...elem, status: reservation.status }  // Return a new object with updated status
+                        : elem
+                );
+                setData(newData);
+                toast.success(`Reservation ${reservation.status}`);
+            };
+    
+            // Add event listener
+            socket?.socket?.on("acceptDelineReservation", handleReservationUpdate);
+    
+            // Clean up event listener
+            return () => {
+                socket?.socket?.off("acceptDelineReservation", handleReservationUpdate);
+            };
+        }
+    }, [socket, data]);  // Include `data` in the dependency array
+    
 
     useEffect(() => {
         const getUserReservations = async () => {

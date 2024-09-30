@@ -3,6 +3,7 @@ import agencyModal, { IAgency } from "../Model/agency.modal.js";
 import vehiculeModel, { IVehicle } from "../Model/vehicule.model.js";
 import notificationModal, { INotification } from "../Model/notification.modal.js";
 import reservationModel, { IReservation } from "../Model/reservation.model.js";
+import { getUserSocketId, io } from "../socket/socket.js";
 
 export const getAgentProfile = async (req: Request, res: Response) => {
     try {
@@ -162,10 +163,10 @@ export const getDashboard = async (req: Request, res: Response) => {
     try {
         const agent_id = req.agent?._id;
 
-        const getNotifications: INotification[] = await notificationModal.find({ recipient: agent_id });
+        const getNotifications: INotification[] = await notificationModal.find({ recipient: agent_id, isRead: false });
         const agentExist: IAgency | null = await agencyModal.findById(agent_id).populate("cars");
         const carsExist = agentExist?.cars;
-        const reservations: IReservation[] = await reservationModel.find({ agency: agent_id });
+        const reservations: IReservation[] = await reservationModel.find({ agency: agent_id, status: "En Attente" });
 
         res.status(200).json({
             success: true, data: {
@@ -179,3 +180,81 @@ export const getDashboard = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: "Erreur Interne du Serveur" });
     }
 }
+
+export const getNotifications = async (req: Request, res: Response) => {
+    try {
+        const agency_id = req.agent?._id;
+
+        const agency: IAgency | null = await agencyModal.findById(agency_id).populate("notifications");
+        if (!agency) return res.status(404).json({ success: false, message: "Agence Pas Trouvé" });
+
+        const notifications = agency.notifications;
+        if (!notifications || notifications.length === 0) {
+            return res.status(204).json({ success: true, data: [] });
+        }
+
+        res.status(200).json({ success: true, data: notifications });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur Interne du Serveur" });
+    }
+};
+
+export const updateNotifications = async (req: Request, res: Response) => {
+    try {
+        const agency_id = req.agent?._id;
+
+        const updateNotifications = await notificationModal.updateMany(
+            { recipient: agency_id, recipientModel: 'Agency', isRead: false }, // Filter criteria
+            { $set: { isRead: true } } // Set the isRead field to true
+        );
+
+        res.status(200).json({ successs: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur Interne du Serveur" });
+    }
+};
+
+export const getReservations = async (req: Request, res: Response) => {
+    try {
+        const agency_id = req.agent?._id;
+
+        const reservations: IReservation[] = await reservationModel.find({ agency: agency_id }).populate("car").populate("agency").populate("user");
+        if (!reservations || reservations.length === 0) return res.status(204).json({ success: true, message: "Pas de Résérvations" });
+
+        res.status(200).json({ success: true, data: reservations });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur Interne du Serveur" });
+    }
+};
+
+export const acceptDeclineReservation = async (req: Request, res: Response) => {
+    try {
+        const agency_id = req.agent?._id;
+        const { reservation_id, status, userId } = req.body;
+
+        if (!reservation_id || !status || !userId) return res.status(400).json({ success: false, message: "Manque D'informations" });
+
+        const agencyExist: IAgency | null = await agencyModal.findById(agency_id);
+        if (!agencyExist) return res.status(404).json({ success: false, message: "Agence Pas Trouvé" });
+
+        const reservation: IReservation | null = await reservationModel.findOneAndUpdate({ agency: agencyExist._id, _id: reservation_id }, {
+            status: status,
+        }, { new: true });
+
+        const newReservation: IReservation | null = await reservationModel.findOne({ agency: agencyExist._id, _id: reservation_id }).populate("car").populate("agency");
+
+        const receiver: string | undefined = getUserSocketId(userId);
+
+        if (receiver !== undefined) {            
+            io.to(receiver).emit("acceptDelineReservation", newReservation);
+        }
+
+        res.status(200).json({ success: true, reservation: reservation });
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur Interne du Serveur" });
+    }
+};

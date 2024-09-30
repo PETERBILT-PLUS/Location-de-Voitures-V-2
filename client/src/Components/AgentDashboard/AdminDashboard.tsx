@@ -2,16 +2,18 @@ import { useEffect, useState } from 'react';
 import { faCar } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarAlt, faBell } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Card, Col, Container, Nav, NavDropdown, Navbar, Row, Button, Spinner } from 'react-bootstrap';
+import { Card, Col, Container, Row, Spinner } from 'react-bootstrap';
 import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 function AdminDashboard() {
     const [loading, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<any>(null);
     const SERVER: string = import.meta.env.VITE_SERVER as string;
+    const agency = useSelector((state: any) => state.auth.agency.currentAgency);
 
     console.log(data);
 
@@ -42,7 +44,7 @@ function AdminDashboard() {
 
     if (loading) {
         return (
-            <div className="bg-white min-vh-100 d-flex flex-row justify-centen-center align-items-center">
+            <div className="bg-white min-vh-100 d-flex flex-row justify-content-center align-items-center">
                 <Spinner></Spinner>
             </div>
         );
@@ -51,33 +53,37 @@ function AdminDashboard() {
     return (
         <div className="bg-light">
             <Container className="py-5">
-                <h4 className="text-center mb-4">Bienvenue, Mr Name</h4>
+                <h4 className="text-center mb-4">Bienvenue, {agency.nom} {agency.prenom}</h4>
                 <p className="text-center mb-5">Veillez accepter les réservations et voir vos messages depuis votre tableau de bord.</p>
                 <Row xs={1} md={3} className="g-4">
                     <Col>
-                        <Card className="shadow h-100">
-                            <Card.Header className="py-3 text-center bg-primary text-white">Reservations</Card.Header>
-                            <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-                                <Card.Text className="mb-0">{data?.reservations} {data?.reservation < 1 ? "Réservations" : "Réservation"}</Card.Text>
-                                <FontAwesomeIcon icon={faCalendarAlt} className="text-muted mt-3 fs-4" />
-                            </Card.Body>
-                        </Card>
+                        <Link to="reservations" style={{ textDecoration: "none" }}>
+                            <Card className="shadow h-100">
+                                <Card.Header className="py-3 text-center bg-primary text-white">Reservations</Card.Header>
+                                <Card.Body className="d-flex flex-column justify-content-center align-items-center">
+                                    <Card.Text className="mb-0">{data?.reservations} {data?.reservation > 1 ? "Nouvelle Réservations" : "Nouvelle Réservation"}</Card.Text>
+                                    <FontAwesomeIcon icon={faCalendarAlt} className="text-muted mt-3 fs-4" />
+                                </Card.Body>
+                            </Card>
+                        </Link>
                     </Col>
                     <Col>
-                        <Card className="shadow h-100">
-                            <Card.Header className="py-3 text-center bg-secondary text-white">Vehicules</Card.Header>
-                            <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-                                <Card.Text className="mb-0">{data?.cars} {data?.cars > 1 ? "Vehicules" : "Vehicule"}</Card.Text>
-                                <FontAwesomeIcon icon={faCar} className="text-muted mt-3 fs-4" />
-                            </Card.Body>
-                        </Card>
+                        <Link to="vehicules" style={{ textDecoration: "none" }}>
+                            <Card className="shadow h-100">
+                                <Card.Header className="py-3 text-center bg-secondary text-white">Vehicules</Card.Header>
+                                <Card.Body className="d-flex flex-column justify-content-center align-items-center">
+                                    <Card.Text className="mb-0">{data?.cars} {data?.cars > 1 ? "Vehicules" : "Vehicule"}</Card.Text>
+                                    <FontAwesomeIcon icon={faCar} className="text-muted mt-3 fs-4" />
+                                </Card.Body>
+                            </Card>
+                        </Link>
                     </Col>
                     <Col>
-                        <Link to="/" style={{ textDecoration: "none" }}>
+                        <Link to="notifications" style={{ textDecoration: "none" }}>
                             <Card className="shadow h-100">
                                 <Card.Header className="py-3 text-center bg-danger text-white">Notifications</Card.Header>
                                 <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-                                    <Card.Text className="mb-0">{data?.reservations} {data?.reservations > 1 ? "Notifications" : "Notification"}</Card.Text>
+                                    <Card.Text className="mb-0">{data?.notification} {data?.notification > 1 ? "Nouvelles Notifications" : "Nouvelle Notification"}</Card.Text>
                                     <FontAwesomeIcon icon={faBell} className="text-muted mt-3 fs-4" />
                                 </Card.Body>
                             </Card>

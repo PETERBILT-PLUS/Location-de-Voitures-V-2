@@ -37,24 +37,8 @@ function CheckState() {
             }
         }
 
-        const getAgency = async () => {
-            try {
-
-            } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    toast.warning(error.response?.data.message);
-                } else {
-
-                }
-            }
-        }
-
         if (user || agency) {
             getState();
-        }
-
-        if (agency) {
-            getAgency();
         }
     }, [user, agency]);
 

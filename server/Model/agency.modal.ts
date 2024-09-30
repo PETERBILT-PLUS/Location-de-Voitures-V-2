@@ -21,6 +21,7 @@ export interface IAgency extends Document {
     localisation: string;
     cars: ObjectId[] | string[];
     notifications: ObjectId[] | string[],
+    lastPay: Date;
     paypalAccountId: string;
     isPay: boolean;
 }
@@ -44,8 +45,9 @@ const AgencySchema = new mongoose.Schema<IAgency>({
     subscriptionExpiresAt: { type: Date, default: Date.now() },
     tryFree: { type: Boolean, default: false },
     localisation: { type: String, required: false },
-    cars: [{ type: mongoose.Types.ObjectId, ref: "Vehicle" }],
+    cars: [{ type: mongoose.Types.ObjectId, ref: "Vehicle", default: [] }],
     notifications: [{ type: mongoose.Types.ObjectId, ref: "Notification", default: [] }],
+    lastPay: { type: Date, default: new Date(Date.now()) },
     paypalAccountId: { type: String, required: true },
     isPay: { type: Boolean, default: false },
 }, { timestamps: true });

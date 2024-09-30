@@ -42,7 +42,10 @@ function AgenceDashboadLayout() {
         }
       } catch (error: any) {
         if (axios.isAxiosError(error)) {
-          toast.warning(error.response?.data.message);
+          if (error.response?.status == 403) {
+            navigate("/login-agent");
+            toast.warning(error.response?.data.message);
+          }
         } else {
           toast.error(error.message);
           console.error(error);
@@ -56,7 +59,7 @@ function AgenceDashboadLayout() {
   return (
     <section className="container-fluid bg-light min-vh-100">
       <Row>
-        <div className="d-none d-lg-block col-md-2 px-0">
+        <div className="d-none d-lg-block col-lg-2 px-0">
           <AdminAgenceSideBar />
         </div>
         <div className="col-12 col-lg-10 px-0">
@@ -67,13 +70,24 @@ function AgenceDashboadLayout() {
               <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="me-auto">
                   <NavDropdown title="Dropdown" id="collapsible-nav-dropdown">
-                    <NavDropdown.Item><Link style={{ textDecoration: "none", height: "100%" }} to="/agence-dashboard">Dashboard</Link></NavDropdown.Item>
-                    <NavDropdown.Item><Link style={{ textDecoration: "none" }} to="/agence-dashboard/profile">Profile</Link></NavDropdown.Item>
-                    <NavDropdown.Item><Link style={{ textDecoration: "none" }} to="/agence-dashboard/create-listing">Ajouter Un Vehicule</Link></NavDropdown.Item>
-                    <NavDropdown.Item><Link style={{ textDecoration: "none" }} to="/agence-dashboard/vehicules">Mes Vehicules</Link></NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/agence-dashboard" style={{ textDecoration: "none" }}>
+                      Dashboard
+                    </NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/agence-dashboard/profile" style={{ textDecoration: "none" }}>
+                      Profile
+                    </NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/agence-dashboard/create-listing" style={{ textDecoration: "none" }}>
+                      Ajouter Un Vehicule
+                    </NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/agence-dashboard/vehicules" style={{ textDecoration: "none" }}>
+                      Mes Vehicules
+                    </NavDropdown.Item>
                     <NavDropdown.Divider />
-                    <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+                    <NavDropdown.Item href="#action/3.4">
+                      Separated link
+                    </NavDropdown.Item>
                   </NavDropdown>
+
                 </Nav>
                 <Nav className="">
                   <Button variant="outline-light" style={{ width: "125px" }} onClick={handleLogout}>Déconnexion</Button> {/* Logout button */}

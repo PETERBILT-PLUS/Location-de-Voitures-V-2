@@ -18,7 +18,7 @@ const getUserState = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const token = req.cookies.token;
         if (!token) {
-            return res.status(403).json({ success: false, message: "Pas Autorisé: Token Pas Trouvé" });
+            return res.status(403).json({ success: false, message: "Token Pas Trouvé, Veiller Inscrire a Nouveau" });
         }
         const JWT_SECRET = process.env.JWT_SECRET;
         if (!JWT_SECRET) {

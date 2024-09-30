@@ -63,7 +63,7 @@ const reservationSchema = new mongoose_1.default.Schema({
     },
     status: {
         type: String,
-        enum: ["En Attente", "Accepté"], // Ensure only valid statuses are used
+        enum: ["En Attente", "Accepté", "Refusé"], // Ensure only valid statuses are used
         default: "En Attente" // Default status if not specified
     }
 });
