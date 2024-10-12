@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import UserShema from "../Model/user.model.js";
+import superAdminModal, { ISuperAdmin } from "../Model/superAdmin.modal.js";
 
 
 // this function take the credantials and enter it in the database
@@ -17,6 +18,9 @@ export const register = async (req: Request, res: Response) => {
         // Check if this user is already in the database
         const findUser = await UserShema.findOne({ email: email });
         if (findUser) {
+            const isMatch = await bcrypt.compare(password, findUser.password);
+            if (!isMatch) return res.status(409).json({ success: false, message: "E-mail Déja Utilisé" });
+
             const JWT_SECRET = process.env.JWT_SECRET;
             if (!JWT_SECRET) throw new Error("JWT_SECRET NOT FOUND IN THE .env file please check it again");
 
@@ -90,6 +94,25 @@ export const login = async (req: Request, res: Response) => {
         // check if email and password is available
         if (!email || !password) return res.status(400).json({ success: false, message: "Missing Credantials" });
         const findUser = await UserShema.findOne({ email: email });
+        const findSuperAdmin: ISuperAdmin | null = await superAdminModal.findOne({ email: email });
+        if (findSuperAdmin) {
+            const JWT_SECRET = process.env.JWT_SECRET;
+            if (!JWT_SECRET) throw new Error("JWT_SECRET NOT FOUND IN THE .env file please check it again");
+            const passMatch = await bcrypt.compare(password, findSuperAdmin.password);
+            if (!passMatch) return res.status(401).json({ success: false, message: "Certaines des informations ou toutes les informations fournies sont incorrectes. Veuillez vérifier et réessayer." });
+            const token = jwt.sign({ _id: findSuperAdmin._id }, JWT_SECRET, { expiresIn: "60d" });
+            const DEPLOYMENT = process.env.DEPLOYMENT;
+            // Check if DEPLOYMENT is available or not
+            if (!DEPLOYMENT) throw new Error("The Deployment is not accessible please check the .env file");
+
+            res.cookie("token", token, {
+                maxAge: 1000 * 60 * 60 * 24 * 60,
+                httpOnly: true,
+                sameSite: "strict",
+                secure: DEPLOYMENT === "development" ? false : true,
+            })
+            return res.status(200).json({ success: true, superAdmin: true });
+        }
         if (!findUser) return res.status(404).json({ success: false, message: "Certaines des informations ou toutes les informations fournies sont incorrectes. Veuillez vérifier et réessayer." });
         const passwordIsMatch = await bcrypt.compare(password, findUser.password);
         if (!passwordIsMatch) return res.status(404).json({ success: false, message: "Certaines des informations ou toutes les informations fournies sont incorrectes. Veuillez vérifier et réessayer." });

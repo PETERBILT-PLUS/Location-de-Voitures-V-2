@@ -16,7 +16,8 @@ import reservationModel, { IReservation } from "./Model/reservation.model.js";
 import notificationModal from "./Model/notification.modal.js";
 import { userStateRouter } from "./Routes/userStateRouter.router.js";
 import { app, server } from "./socket/socket.js";
-
+import superAdminRouter from "./Routes/superAdminRouter.router.js";
+import superAdminStateRouter from "./Routes/superAdminState.router.js";
 config();
 
 const PORT = process.env.PORT || 5000;
@@ -35,8 +36,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //this is fot the state
 app.use("/agent-state", checkAgent);
 app.use("/user-state", userStateRouter);
+app.use("/super-admin-state", superAdminStateRouter);
 
-
+app.use("/super-admin", superAdminRouter);
 app.use("/auth", authRouter);
 app.use("/agent", agentRouter);
 app.use("/cars", carsRouter);

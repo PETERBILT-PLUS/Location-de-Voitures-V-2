@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import Stripe from "stripe";
-import agencyModal from "../Model/agency.modal.js";
+import agencyModal, { IAgency } from "../Model/agency.modal.js";
 
 
 export const registerAgent = async (req: Request, res: Response) => {
@@ -16,6 +16,9 @@ export const registerAgent = async (req: Request, res: Response) => {
         if (!nom || !prenom || !email || !password || !phoneNumber || !address || !city || !registrationNumber || !businessLicenseNumber || !insurancePolicyNumber || !paypalAccountId) {
             return res.status(403).json({ success: false, message: "Missing Credentials" });
         }
+
+        const agencyExist: IAgency | null = await agencyModal.findOne({ email: email });
+        if (agencyExist) return res.status(409).json({ success: false, messgae: "E-mail Déja Utilisé" });
 
         // Hash password
         const salt = await bcrypt.genSalt(10);

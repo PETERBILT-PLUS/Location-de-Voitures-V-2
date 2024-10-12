@@ -28,22 +28,35 @@ function Login() {
     const onSubmit = async (values: ILogin, actions: FormikHelpers<ILogin>) => {
         try {
             const res: AxiosResponse<any, any> = await axios.post(`${SERVER}/auth/login`, values, { withCredentials: true });
+            console.log(res.data);
+            
             if (res.data.success) {
-                toast.success("Ulilisateur Connecté avec Succès");
-                actions.resetForm();
-                dispatch(loginUser(res.data.user));
-                await new Promise((resolve) => setInterval(resolve, 3500));
-                navigate("/");
+                if (res.data.superAdmin) {
+                    // Super Admin Login
+                    toast.success("Connexion Super Admin réussie");
+                    actions.resetForm();
+                    await new Promise((resolve) => setTimeout(resolve, 3500));
+                    navigate("/super-admin");
+                } else {
+                    // Regular User Login
+                    alert("1");
+                    toast.success("Utilisateur connecté avec succès");
+                    actions.resetForm();
+                    dispatch(loginUser(res.data.user));
+                    await new Promise((resolve) => setTimeout(resolve, 3500));
+                    navigate("/");
+                }
             }
         } catch (error: any) {
             if (axios.isAxiosError(error)) {
                 toast.warning(error.response?.data.message);
             } else {
                 console.error(error);
-                toast.error("Ops An Error Happend");
+                toast.error("Une erreur est survenue");
             }
         }
     };
+
 
     const { errors, touched, values, isSubmitting, handleSubmit, handleChange, handleBlur } = useFormik<ILogin>({
         validationSchema: loginSchema,

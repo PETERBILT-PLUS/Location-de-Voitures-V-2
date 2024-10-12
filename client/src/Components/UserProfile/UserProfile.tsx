@@ -71,6 +71,7 @@ function UserProfile() {
             <Row className="d-flex flex-row justify-content-center align-items-center">
                 <Col xs={12} md={6} lg={4} >
                     <Form autoComplete="off" onSubmit={handleSubmit} className="py-5 px-4 mx-4 bg-white shadow rounded">
+                        <h2 className="text-center pb-3" style={{ color: "var(--lightBlue)" }}>Profile</h2>
                         <Form.Group className="py-1">
                             <Form.Label htmlFor="nom">Nom: </Form.Label>
                             <Form.Control type="text" id="nom" name="nom" placeholder="Nom" value={values.nom} onChange={handleChange} onBlur={handleBlur} />

@@ -7,9 +7,9 @@ import SubmitButton from "../../../SubComponents/SubmitButton/SubmitButton.tsx";
 import axios, { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
+import { agentProfileSchema } from "../../../Configuration/agentProfile.ts";
 
 function RegisterAgent() {
-    const [loading, setLoading] = React.useState<boolean>(false);
     const navigate = useNavigate();
 
     const cities = [
@@ -29,7 +29,6 @@ function RegisterAgent() {
 
     const onSubmit = async (values: any, action: any) => {
         try {
-            setLoading(true);
             const res: AxiosResponse<any, any> = await axios.post("http://localhost:5000/agent/register", values);
             if (res.data.success) {
                 toast.success("Registrement Succès");
@@ -40,10 +39,8 @@ function RegisterAgent() {
             if (axios.isAxiosError(error)) {
                 toast.warning(error.response?.data.message);
             }
-        } finally {
-            setLoading(false);
         }
-    }
+    };
 
     const { values, errors, touched, handleBlur, handleChange, handleSubmit, isSubmitting } = useFormik({
         initialValues: {
@@ -52,16 +49,17 @@ function RegisterAgent() {
             email: "",
             password: "",
             confirmPassword: "",
-            tel: "",
+            telephone: "",
             adress: "",
-            city: "",
+            ville: "",
             website: "",
             numeroDinscription: "",
-            numeroDeLicenceCommerciale: "",
-            numeroDePoliceDassurance: "",
+            numeroDeLisenceCommercial: "",
+            NumeroDePoliceDassurance: "",
+            localisation: "",
             paypalAccountId: "",
         },
-        validationSchema: registerAgentSchema,
+        validationSchema: agentProfileSchema,
         onSubmit,
     });
 
@@ -137,17 +135,17 @@ function RegisterAgent() {
                                 {errors.confirmPassword && touched.confirmPassword && <h6 className="text-danger error-header">{errors.confirmPassword}</h6>}
                             </Form.Group>
 
-                            <Form.Group controlId="tel">
+                            <Form.Group controlId="telephone">
                                 <Form.Label>Téléphone</Form.Label>
                                 <Form.Control
                                     className="input-form"
                                     type="tel"
-                                    name="tel"
-                                    value={values.tel}
+                                    name="telephone"
+                                    value={values.telephone}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                 />
-                                {errors.tel && touched.tel && <h6 className="text-danger error-header">{errors.tel}</h6>}
+                                {errors.telephone && touched.telephone && <h6 className="text-danger error-header">{errors.telephone}</h6>}
                             </Form.Group>
 
                             <Form.Group controlId="adress">
@@ -163,12 +161,12 @@ function RegisterAgent() {
                                 {errors.adress && touched.adress && <h6 className="text-danger error-header">{errors.adress}</h6>}
                             </Form.Group>
 
-                            <Form.Group controlId="city">
+                            <Form.Group controlId="ville">
                                 <Form.Label>Ville</Form.Label>
                                 <Form.Select
                                     className="form-select"
-                                    name="city"
-                                    value={values.city}
+                                    name="ville"
+                                    value={values.ville}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                 >
@@ -177,24 +175,24 @@ function RegisterAgent() {
                                         <option key={idx}>{elem}</option>
                                     ))}
                                 </Form.Select>
-                                {errors.city && touched.city && <h6 className="text-danger error-header pt-2">{errors.city}</h6>}
+                                {errors.ville && touched.ville && <h6 className="text-danger error-header pt-2">{errors.ville}</h6>}
                             </Form.Group>
 
                             <Form.Group controlId="website">
-                                <Form.Label>Site Web (Facultatif)</Form.Label>
+                                <Form.Label>Site Web</Form.Label>
                                 <Form.Control
                                     className="input-form"
-                                    type="text"
+                                    type="url"
                                     name="website"
                                     value={values.website}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                 />
-                                {errors.website && touched.website && <h6 className="text-danger error-header pt-2">{errors.website}</h6>}
+                                {errors.website && touched.website && <h6 className="text-danger error-header">{errors.website}</h6>}
                             </Form.Group>
 
                             <Form.Group controlId="numeroDinscription">
-                                <Form.Label>Numéro d'inscription</Form.Label>
+                                <Form.Label>Numéro d'Inscription</Form.Label>
                                 <Form.Control
                                     className="input-form"
                                     type="text"
@@ -203,37 +201,50 @@ function RegisterAgent() {
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                 />
-                                {errors.numeroDinscription && touched.numeroDinscription && <h6 className="text-danger error-header pt-2">{errors.numeroDinscription}</h6>}
+                                {errors.numeroDinscription && touched.numeroDinscription && <h6 className="text-danger error-header">{errors.numeroDinscription}</h6>}
                             </Form.Group>
 
-                            <Form.Group controlId="numeroDeLicenceCommerciale">
-                                <Form.Label>Numéro de licence commerciale</Form.Label>
+                            <Form.Group controlId="numeroDeLisenceCommercial">
+                                <Form.Label>Numéro de Licence Commerciale</Form.Label>
                                 <Form.Control
                                     className="input-form"
                                     type="text"
-                                    name="numeroDeLicenceCommerciale"
-                                    value={values.numeroDeLicenceCommerciale}
+                                    name="numeroDeLisenceCommercial"
+                                    value={values.numeroDeLisenceCommercial}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                 />
-                                {errors.numeroDeLicenceCommerciale && touched.numeroDeLicenceCommerciale && <h6 className="text-danger error-header pt-2">{errors.numeroDeLicenceCommerciale}</h6>}
+                                {errors.numeroDeLisenceCommercial && touched.numeroDeLisenceCommercial && <h6 className="text-danger error-header">{errors.numeroDeLisenceCommercial}</h6>}
                             </Form.Group>
 
-                            <Form.Group controlId="numeroDePoliceDassurance">
-                                <Form.Label>Numéro de police d'assurance</Form.Label>
+                            <Form.Group controlId="NumeroDePoliceDassurance">
+                                <Form.Label>Numéro de Police d'Assurance</Form.Label>
                                 <Form.Control
                                     className="input-form"
                                     type="text"
-                                    name="numeroDePoliceDassurance"
-                                    value={values.numeroDePoliceDassurance}
+                                    name="NumeroDePoliceDassurance"
+                                    value={values.NumeroDePoliceDassurance}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                 />
-                                {errors.numeroDePoliceDassurance && touched.numeroDePoliceDassurance && <h6 className="text-danger error-header pt-2">{errors.numeroDePoliceDassurance}</h6>}
+                                {errors.NumeroDePoliceDassurance && touched.NumeroDePoliceDassurance && <h6 className="text-danger error-header">{errors.NumeroDePoliceDassurance}</h6>}
+                            </Form.Group>
+
+                            <Form.Group controlId="localisation">
+                                <Form.Label>Localisation</Form.Label>
+                                <Form.Control
+                                    className="input-form"
+                                    type="text"
+                                    name="localisation"
+                                    value={values.localisation}
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                />
+                                {errors.localisation && touched.localisation && <h6 className="text-danger error-header">{errors.localisation}</h6>}
                             </Form.Group>
 
                             <Form.Group controlId="paypalAccountId">
-                                <Form.Label>ID de compte PayPal</Form.Label>
+                                <Form.Label>ID de Compte PayPal</Form.Label>
                                 <Form.Control
                                     className="input-form"
                                     type="text"
@@ -242,12 +253,12 @@ function RegisterAgent() {
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                 />
-                                {errors.paypalAccountId && touched.paypalAccountId && <h6 className="text-danger error-header pt-2">{errors.paypalAccountId}</h6>}
+                                {errors.paypalAccountId && touched.paypalAccountId && <h6 className="text-danger error-header">{errors.paypalAccountId}</h6>}
                             </Form.Group>
 
-                            <SubmitButton disabled={isSubmitting} loading={loading} />
+                            <SubmitButton disabled={isSubmitting} loading={isSubmitting} />
 
-                            <p className="fs-6 pt-4">Vous avez Déja un compte <Link to="/login-agent">Login</Link></p>
+                            <p className="pt-4 text-secondary">Vous Avez Déja un compte <Link to="/login-agent">Connection</Link></p>
                         </Form>
                     </div>
                 </Row>

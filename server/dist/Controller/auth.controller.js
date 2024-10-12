@@ -16,6 +16,7 @@ exports.logout = exports.login = exports.register = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_model_js_1 = __importDefault(require("../Model/user.model.js"));
+const superAdmin_modal_js_1 = __importDefault(require("../Model/superAdmin.modal.js"));
 // this function take the credantials and enter it in the database
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -27,6 +28,9 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // Check if this user is already in the database
         const findUser = yield user_model_js_1.default.findOne({ email: email });
         if (findUser) {
+            const isMatch = yield bcrypt_1.default.compare(password, findUser.password);
+            if (!isMatch)
+                return res.status(409).json({ success: false, message: "E-mail Déja Utilisé" });
             const JWT_SECRET = process.env.JWT_SECRET;
             if (!JWT_SECRET)
                 throw new Error("JWT_SECRET NOT FOUND IN THE .env file please check it again");
@@ -97,6 +101,27 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!email || !password)
             return res.status(400).json({ success: false, message: "Missing Credantials" });
         const findUser = yield user_model_js_1.default.findOne({ email: email });
+        const findSuperAdmin = yield superAdmin_modal_js_1.default.findOne({ email: email });
+        if (findSuperAdmin) {
+            const JWT_SECRET = process.env.JWT_SECRET;
+            if (!JWT_SECRET)
+                throw new Error("JWT_SECRET NOT FOUND IN THE .env file please check it again");
+            const passMatch = yield bcrypt_1.default.compare(password, findSuperAdmin.password);
+            if (!passMatch)
+                return res.status(401).json({ success: false, message: "Certaines des informations ou toutes les informations fournies sont incorrectes. Veuillez vérifier et réessayer." });
+            const token = jsonwebtoken_1.default.sign({ _id: findSuperAdmin._id }, JWT_SECRET, { expiresIn: "60d" });
+            const DEPLOYMENT = process.env.DEPLOYMENT;
+            // Check if DEPLOYMENT is available or not
+            if (!DEPLOYMENT)
+                throw new Error("The Deployment is not accessible please check the .env file");
+            res.cookie("token", token, {
+                maxAge: 1000 * 60 * 60 * 24 * 60,
+                httpOnly: true,
+                sameSite: "strict",
+                secure: DEPLOYMENT === "development" ? false : true,
+            });
+            return res.status(200).json({ success: true, superAdmin: true });
+        }
         if (!findUser)
             return res.status(404).json({ success: false, message: "Certaines des informations ou toutes les informations fournies sont incorrectes. Veuillez vérifier et réessayer." });
         const passwordIsMatch = yield bcrypt_1.default.compare(password, findUser.password);

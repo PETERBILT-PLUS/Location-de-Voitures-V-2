@@ -31,6 +31,8 @@ const reservation_model_js_1 = __importDefault(require("./Model/reservation.mode
 const notification_modal_js_1 = __importDefault(require("./Model/notification.modal.js"));
 const userStateRouter_router_js_1 = require("./Routes/userStateRouter.router.js");
 const socket_js_1 = require("./socket/socket.js");
+const superAdminRouter_router_js_1 = __importDefault(require("./Routes/superAdminRouter.router.js"));
+const superAdminState_router_js_1 = __importDefault(require("./Routes/superAdminState.router.js"));
 (0, dotenv_1.config)();
 const PORT = process.env.PORT || 5000;
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
@@ -46,6 +48,8 @@ socket_js_1.app.use(body_parser_1.default.urlencoded({ extended: true }));
 //this is fot the state
 socket_js_1.app.use("/agent-state", checkAgent_router_js_1.default);
 socket_js_1.app.use("/user-state", userStateRouter_router_js_1.userStateRouter);
+socket_js_1.app.use("/super-admin-state", superAdminState_router_js_1.default);
+socket_js_1.app.use("/super-admin", superAdminRouter_router_js_1.default);
 socket_js_1.app.use("/auth", auth_router_js_1.default);
 socket_js_1.app.use("/agent", auth_agent_router_js_1.default);
 socket_js_1.app.use("/cars", cars_router_js_1.default);

@@ -59,11 +59,13 @@ function LoginAgent() {
             <Container>
                 <h3 className="text-light text-center title py-5">Login Agence</h3>
                 <Row>
-                    <div className="col-11 col-md-6 col-lg-4 col-xlg-3 mx-auto">
+                    <div className="col-11 col-md-6 col-lg-4 mx-auto">
                         <Form className="agent-register-form" onSubmit={handleSubmit} autoComplete="off">
-                            <Form.Control className="input-form" type="email" value={values.email} onBlur={handleBlur} onChange={handleChange} placeholder="email" name="email" />
+                            <Form.Label htmlFor="email" className="py-0">E-mail:</Form.Label>
+                            <Form.Control className="input-form mb-4 my-0" type="email" value={values.email} isInvalid={!!errors.email && touched.email} onBlur={handleBlur} onChange={handleChange} placeholder="email" name="email" />
                             {errors.email && touched.email && <h6 className="text-danger error-header">{errors.email}</h6>}
-                            <Form.Control className="input-form" type="password" value={values.password} onBlur={handleBlur} onChange={handleChange} placeholder="password" name="password" />
+                            <Form.Label htmlFor="password">Password:</Form.Label>
+                            <Form.Control className="input-form my-0" type="password" value={values.password} isInvalid={!!errors.password && touched.password} onBlur={handleBlur} onChange={handleChange} placeholder="password" name="password" />
                             {errors.password && touched.password && <h6 className="text-danger error-header">{errors.password}</h6>}
                             <SubmitButton disabled={isSubmitting} loading={loading} />
                             <Form.Text id="passwordHelpBlock" muted>

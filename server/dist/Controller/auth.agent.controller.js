@@ -35,6 +35,9 @@ const registerAgent = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (!nom || !prenom || !email || !password || !phoneNumber || !address || !city || !registrationNumber || !businessLicenseNumber || !insurancePolicyNumber || !paypalAccountId) {
             return res.status(403).json({ success: false, message: "Missing Credentials" });
         }
+        const agencyExist = yield agency_modal_js_1.default.findOne({ email: email });
+        if (agencyExist)
+            return res.status(409).json({ success: false, messgae: "E-mail Déja Utilisé" });
         // Hash password
         const salt = yield bcrypt_1.default.genSalt(10);
         const hashedPassword = yield bcrypt_1.default.hash(password, salt);

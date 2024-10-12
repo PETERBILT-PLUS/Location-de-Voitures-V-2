@@ -104,9 +104,9 @@ function SingleCar() {
                 </div>
 
                 {/* Car Details and Reservation Form */}
-                <Row>
+                <Row className="pt-4">
                     <Col xs={12} lg={6} className="text-center text-lg-start mb-4">
-                        <h1 className="mb-3 fs-3 text-primary">Nom: {data?.carMarque}</h1>
+                        <h1 className="mb-3 fs-4 text-primary">Nom: {data?.carName}</h1>
                         <p className="fs-5 text-secondary">Type De Carburant: {data?.carFuel || "No description available."}</p>
                         <p className="fs-5 text-secondary">Nombre de Places: {data?.places || "No description available."}</p>
                         <p className="fs-5 text-secondary">Kilométrage: {data?.carKm + " Km" || "No information available."}</p>

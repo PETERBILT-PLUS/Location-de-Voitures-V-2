@@ -26,6 +26,12 @@ import AgencyReservations from './Components/AgencyReservations/AgencyReservatio
 import Apropos from './Components/Apropos/Apropos.tsx';
 import PolitiqueConfidentialite from './Components/PolitiqueConfidentialite/PolitiqueConfidentialite.tsx';
 import ConditionsGenerales from './Components/ConditionsGenerales/ConditionsGenerales.tsx';
+import SuperAdminLayout from './Layout/SuperAdminLayout/SuperAdminLayout.tsx';
+import SuperAdminUsers from './Components/SuperAdminUsers/SuperAdminUsers.tsx';
+import SuperAdminUserReservations from './Components/SuperAdminUserReservations/SuperAdminUserReservations.tsx';
+import SuperAdminAgencys from './Components/SuperAdminAgencys/SuperAdminAgencys.tsx';
+import SuperAdminDashboard from './Components/SuperAdminDashboard/SuperAdminDashboard.tsx';
+import SuperAdminReservations from './Components/SuperAdminReservations/SuperAdminReservations.tsx';
 
 
 function App() {
@@ -37,6 +43,14 @@ function App() {
 
   const router = createBrowserRouter(createRoutesFromElements(
     <Route element={<CheckState />}>
+
+      <Route path="/super-admin" element={<SuperAdminLayout />}>
+        <Route index element={<SuperAdminDashboard />}></Route>
+        <Route path="utilisateurs" element={<SuperAdminUsers />}></Route>
+        <Route path="get-user-reservations/:id" element={<SuperAdminUserReservations />}></Route>
+        <Route path="agences" element={<SuperAdminAgencys />}></Route>
+        <Route path="reservations" element={<SuperAdminReservations />}></Route>
+      </Route>
 
       {/* For the Agency Admin Routes*/}
       <Route path="/agence-dashboard" element={<AgenceDashboadLayout />}>
@@ -59,8 +73,6 @@ function App() {
         <Route path="a-propos" element={<Apropos />}></Route>
         <Route path="politique-confidentialite" element={<PolitiqueConfidentialite />}></Route>
         <Route path="conditions-generales" element={<ConditionsGenerales />}></Route>
-
-
 
         <Route element={<CheckUser />}>
           <Route path="mes-reservations" element={<UserReservations />} />

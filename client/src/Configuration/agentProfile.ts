@@ -14,6 +14,7 @@ export interface IAgentProfile {
     numeroDeLisenceCommercial: string;
     NumeroDePoliceDassurance: string;
     localisation: string;
+    paypalAccountId: string;
 }
 
 export const agentProfileSchema = yup.object<IAgentProfile>().shape({
@@ -31,5 +32,6 @@ export const agentProfileSchema = yup.object<IAgentProfile>().shape({
     numeroDinscription: yup.string().required("Le numéro d'inscription est obligatoire"),
     numeroDeLisenceCommercial: yup.string().required("Le numéro de licence commerciale est obligatoire"),
     NumeroDePoliceDassurance: yup.string().required("Le numéro de police d'assurance est obligatoire"),
-    localisation: yup.string().required("Entrer votre Localisation")
+    localisation: yup.string().required("Entrer votre localisation"),
+    paypalAccountId: yup.string().required("L'ID de compte PayPal est obligatoire")
 });
