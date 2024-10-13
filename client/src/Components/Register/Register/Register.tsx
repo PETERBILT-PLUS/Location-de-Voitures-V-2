@@ -6,10 +6,15 @@ import axios, { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
+import { useLayoutEffect } from "react";
 
 function Register() {
     const SERVER: string = import.meta.env.VITE_SERVER as string;
     const navigate = useNavigate();
+
+    useLayoutEffect(() => {
+        document.title = "Register (Utilisateur)";
+    }, []);
 
     const onSubmit = async (state: IRegister, actions: FormikHelpers<IRegister>) => {
         try {

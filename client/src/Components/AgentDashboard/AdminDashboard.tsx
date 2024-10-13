@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { faCar } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarAlt, faBell } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,6 +7,7 @@ import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useSocketContext } from '../../Context/SocketContext';
 
 
 function AdminDashboard() {
@@ -14,8 +15,11 @@ function AdminDashboard() {
     const [data, setData] = useState<any>(null);
     const SERVER: string = import.meta.env.VITE_SERVER as string;
     const agency = useSelector((state: any) => state.auth.agency.currentAgency);
+    const socket = useSocketContext();
 
-    console.log(data);
+    useLayoutEffect(() => {
+        document.title = "Tableau de Board";
+    }, []);
 
 
     useEffect(() => {
@@ -41,6 +45,34 @@ function AdminDashboard() {
 
         getDashboard();
     }, []);
+
+    useEffect(() => {
+        if (!socket?.socket) {
+            console.error("Socket is not connected.");
+            return;
+        }
+
+        const handleSocket = (newNotification: any) => {
+            console.log("Received new notification via socket:", newNotification);
+
+            // Use functional form of setData to ensure proper state update
+            setData((prev: any) => ({
+                ...prev,
+                notification: prev.notification + 1,
+            }));
+            toast.info("Vous Avez une Nouvelle Notification");
+        };
+
+        // Listen for the 'newNotification' event
+        socket.socket.on("newNotification", handleSocket);
+
+        // Cleanup listener on unmount
+        return () => {
+            if (socket?.socket) {
+                socket.socket.off("newNotification", handleSocket);
+            }
+        };
+    }, [socket]);
 
     if (loading) {
         return (

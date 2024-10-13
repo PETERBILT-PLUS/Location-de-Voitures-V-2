@@ -1,7 +1,13 @@
 import { Card, Col, Container, Row } from "react-bootstrap";
 import MyPaypalButton from "../../SubComponents/MyPaypalButton/MyPaypalButton.tsx";
+import { useLayoutEffect } from "react";
 
 function Payment() {
+
+    useLayoutEffect(() => {
+        document.title = "Payment";
+    }, []);
+
     return (
         <div className="py-5 bg-light min-vh-100">
             <Container>

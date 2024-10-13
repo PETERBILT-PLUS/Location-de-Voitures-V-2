@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 
 const PolitiqueConfidentialite: React.FC = () => {
+
+  useLayoutEffect(() => {
+        document.title = "Politique Confidentialite";
+    }, []);
   return (
     <div className="container my-5 bg-white min-vh-100">
       <h1 className="mb-4">Politique de Confidentialité</h1>

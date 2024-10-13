@@ -8,6 +8,7 @@ import agencyModal from '../Model/agency.modal.js';
 import { differenceInDays } from "date-fns"
 import userModel, { IUser } from '../Model/user.model.js';
 import notificationModal, { INotification } from '../Model/notification.modal.js';
+import { getUserSocketId, io } from '../socket/socket.js';
 
 
 export const getCars = async (req: Request, res: Response): Promise<void> => {
@@ -201,8 +202,14 @@ export const addReservation = async (req: Request, res: Response) => {
         findCar.carEtat = "En Charge";
         await findCar.save();
 
-        res.status(201).json({ success: true, message: "Réservation Crée avec Succès" });
+        const socketReservation: IReservation | null = await reservationModel.findById(reservation._id).populate("agency").populate("car").populate("user");
+        if (!socketReservation) return res.status(201).json({ success: true, message: "Réservation Crée avec Succès" });
+        const agentReceived: string | undefined = getUserSocketId(findAgency._id);
+        if (agentReceived === undefined) return res.status(201).json({ success: true, message: "Réservation Crée avec Succès" });
+        io.to(agentReceived).emit("newReservation", socketReservation);
+        io.to(agentReceived).emit("newNotification", notification);
 
+        res.status(201).json({ success: true, message: "Réservation Crée avec Succès" });
     } catch (error) {
         console.error('Error creating reservation:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });

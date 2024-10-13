@@ -62,14 +62,14 @@ function AgenceDashboadLayout() {
         <div className="d-none d-lg-block col-lg-2 px-0">
           <AdminAgenceSideBar />
         </div>
-        <div className="col-12 col-lg-10 px-0">
+        <div className="col-12 col-lg-10 px-0 py-0" style={{ height: "100vh", overflowY: "scroll" }}>
           <Navbar collapseOnSelect expand="lg" bg="primary" variant="dark">
             <Container>
               <Link to="/agence-dashboard"><Navbar.Brand>Bonjour {agent.nom} {agent.prenom}</Navbar.Brand></Link>
               <Navbar.Toggle aria-controls="responsive-navbar-nav" />
               <Navbar.Collapse id="responsive-navbar-nav">
                 <Nav className="me-auto">
-                  <NavDropdown title="Dropdown" id="collapsible-nav-dropdown">
+                  <NavDropdown title="Plus" id="collapsible-nav-dropdown">
                     <NavDropdown.Item as={Link} to="/agence-dashboard" style={{ textDecoration: "none" }}>
                       Dashboard
                     </NavDropdown.Item>
@@ -82,12 +82,11 @@ function AgenceDashboadLayout() {
                     <NavDropdown.Item as={Link} to="/agence-dashboard/vehicules" style={{ textDecoration: "none" }}>
                       Mes Vehicules
                     </NavDropdown.Item>
-                    <NavDropdown.Divider />
+                    {/*<NavDropdown.Divider />
                     <NavDropdown.Item href="#action/3.4">
                       Separated link
-                    </NavDropdown.Item>
+                    </NavDropdown.Item>*/}
                   </NavDropdown>
-
                 </Nav>
                 <Nav className="">
                   <Button variant="outline-light" style={{ width: "125px" }} onClick={handleLogout}>Déconnexion</Button> {/* Logout button */}
@@ -95,8 +94,6 @@ function AgenceDashboadLayout() {
               </Navbar.Collapse>
             </Container>
           </Navbar>
-
-
           <Outlet />
         </div>
       </Row>

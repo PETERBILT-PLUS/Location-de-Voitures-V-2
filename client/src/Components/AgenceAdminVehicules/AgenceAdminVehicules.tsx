@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { faCar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Card, Col, Container, Modal, Nav, NavDropdown, Navbar, Row } from 'react-bootstrap';
@@ -12,6 +12,10 @@ function AgenceAdminVehicules() {
     const [data, setData] = useState<any[]>([]);
     const [show, setShow] = useState(false);
     const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
+
+    useLayoutEffect(() => {
+        document.title = "Vehicules";
+    }, []);
 
     const handleClose = () => setShow(false);
     const handleShow = (carId: string) => {
@@ -86,11 +90,11 @@ function AgenceAdminVehicules() {
                                 return (
                                     <Col key={elem._id}>
                                         <Card style={{ width: '18rem' }}>
-                                            <Card.Img variant="top" src={elem.carPhotos[0]} />
+                                            <Card.Img variant="top" src={elem.carPhotos[0]}  style={{objectFit: "cover"}} />
                                             <Card.Body>
                                                 <Card.Title className="text-primary">Nom: {elem.carName}</Card.Title>
-                                                <Card.Title>Marque: {elem.carMarque}</Card.Title>
-                                                <Card.Title>Etat: {elem.carEtat}</Card.Title>
+                                                <Card.Text>Marque: {elem.carMarque}</Card.Text>
+                                                <Card.Text>Etat: {elem.carEtat}</Card.Text>
                                                 <div className="d-flex gap-3 border-top pt-3">
                                                     <Link to={`/agence-dashboard/edit-vehicule/${elem._id}`}><button className="edit-car-btn">Modifier</button></Link>
                                                     <button className="delete-car-btn" onClick={() => handleShow(elem._id)}>Supprimer</button>

@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import React, { useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import { Container, Form, Row } from 'react-bootstrap';
 import { LoginAgentSchema } from '../../../Configuration/Schema';
 import { toast } from 'react-toastify';
@@ -18,6 +18,10 @@ function LoginAgent() {
     const navigate = useNavigate();
     const [state, setState] = useState<boolean>();
     const agency = useSelector((state: any) => state.auth.agency.currentAgency);
+
+    useLayoutEffect(() => {
+        document.title = "Login (Agence)";
+    }, []);
 
     const onSubmit = async (values: any, actions: any) => {
         try {

@@ -2,18 +2,19 @@ import axios, { AxiosResponse } from "axios";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Col, Container, Row, Spinner, Card, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { useSocketContext } from "../../Context/SocketContext";
 
 function AgencyReservations() {
     const SERVER: string = import.meta.env.VITE_SERVER as string;
     const [reservations, setReservations] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const socket = useSocketContext();
 
     // Set the document title
     useLayoutEffect(() => {
         document.title = "Réservations";
     }, []);
     console.log(reservations);
-    
 
     // Fetch the agency reservations when the component mounts
     useEffect(() => {
@@ -37,6 +38,14 @@ function AgencyReservations() {
 
         getAgencyReservations();
     }, []);
+
+    useEffect(() => {
+        if (!socket?.socket) return;
+        socket?.socket.on("newReservation", (reservation: any) => {
+            setReservations((prev) => [...prev, reservation]);
+            toast.info("Vous Avez une Nouvelle Réservation");
+        });
+    }, [socket?.socket]);
 
     // Handle Accept/Decline of a reservation
     const handleAcceptDecline = async (reservation_id: string, newStatus: string, userId: string) => {
@@ -84,7 +93,7 @@ function AgencyReservations() {
     return (
         <div className="bg-light py-5 min-vh-100">
             <Container>
-                <h2 className="fs-3 text-center mb-4">Réservations</h2>
+                <h2 className="fs-3 text-center mb-4 pb-5">Réservations</h2>
 
                 <Row className="g-4">
                     {reservations.length > 0 ? (

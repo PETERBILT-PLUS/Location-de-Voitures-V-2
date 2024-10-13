@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 
 const Apropos: React.FC = () => {
+    useLayoutEffect(() => {
+        document.title = "A-Propos";
+    }, []);
     return (
         <div className="container my-5 bg-white min-vh-100">
             <h1 className="mb-4">À propos de nous</h1>
@@ -17,7 +20,7 @@ const Apropos: React.FC = () => {
                 transparente et pratique pour tous, avec un service client de qualité et des tarifs compétitifs.
             </p>
             <p>
-                Si vous avez des questions ou souhaitez en savoir plus sur nos services, n'hésitez pas à nous contacter. Nous sommes là pour vous aider!
+                Si vous avez des questions ou souhaitez en savoir plus sur nos services, n'hésitez pas à nous contacter. (06 24 73 65 90) Nous sommes là pour vous aider!
             </p>
         </div>
     );

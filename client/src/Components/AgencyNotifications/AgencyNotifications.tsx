@@ -1,13 +1,19 @@
 import axios, { AxiosResponse } from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { useSocketContext } from "../../Context/SocketContext";
 
 
 function AgencyNotifications() {
     const [loading, setLoading] = useState<boolean>(true);
     const [notifications, setNotifications] = useState<any[]>([]);
     const SERVER: string = import.meta.env.VITE_SERVER as string;
+    const socket = useSocketContext();
+
+    useLayoutEffect(() => {
+        document.title = "Notifications";
+    }, []);
 
     useEffect(() => {
         const getNotifications = async () => {
@@ -52,7 +58,20 @@ function AgencyNotifications() {
         updateNotifications();
     }, []); // Empty dependency array means this runs once on component mount.
 
+    useEffect(() => {
+        if (!socket?.socket) return;
+        const handleNotification = (newNotification: any) => {
+            setNotifications((prevNotifications) => [newNotification, ...prevNotifications]); // Add new notification at the start
+            toast.info("Vous avez une Nouvelle Notification!");
+        };
 
+        socket?.socket.on("newNotification", handleNotification);
+
+        return () => {
+            if (!socket?.socket) return;
+            socket?.socket.off("newNotification", handleNotification); // Clean up the listener when component unmounts
+        };
+    }, [socket]);
 
     if (loading) {
         return (
@@ -66,6 +85,7 @@ function AgencyNotifications() {
         <div className="py-5 bg-light">
             <Container>
                 <h2 className="fs-2 text-center ">Notifications:</h2>
+                {!notifications.length && !loading && <h3 className="text-secondary text-center pt-5">Pas De Notifications</h3>}
 
                 <Row className="py-5">
                     {!!notifications.length && notifications.map((elem: any, index: number) => {

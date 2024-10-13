@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { Form, Button, Container, Nav, NavDropdown, Navbar, Row, Image } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import "./CreateListing.css";
@@ -50,6 +50,9 @@ function CreateListing() {
     const [imageLoading, setImageLoading] = React.useState<boolean>(false);
     const [files, setFiles] = React.useState<any>([]);
 
+    useLayoutEffect(() => {
+        document.title = "Ajouter un Vehicule";
+    }, []);
 
     const handleImageSubmit = () => {
         if (files.length > 0 && files.length + values.carPhotos.length < 7) {

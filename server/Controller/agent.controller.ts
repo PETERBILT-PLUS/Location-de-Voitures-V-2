@@ -248,7 +248,7 @@ export const acceptDeclineReservation = async (req: Request, res: Response) => {
 
         const receiver: string | undefined = getUserSocketId(userId);
 
-        if (receiver !== undefined) {            
+        if (receiver !== undefined) {
             io.to(receiver).emit("acceptDelineReservation", newReservation);
         }
 
@@ -256,5 +256,32 @@ export const acceptDeclineReservation = async (req: Request, res: Response) => {
     } catch (error: any) {
         console.error(error);
         res.status(500).json({ success: false, message: "Erreur Interne du Serveur" });
+    }
+};
+
+export const tryFree = async (req: Request, res: Response) => {
+    try {
+        const agent_id = req.agent?._id;
+
+        if (!agent_id) {
+            return res.status(400).json({ success: false, message: "Agent ID is missing" }); // 400 Bad Request if agent_id is missing
+        }
+
+        const agencyPay: IAgency | null = await agencyModal.findById(agent_id);
+        if (Boolean(agencyPay?.tryFree) === true) return res.status(401).json({ success: false, message: "Pas Autorisé" });
+
+        const updateAgent: IAgency | null = await agencyModal.findByIdAndUpdate(agent_id, {
+            subscriptionExpiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days from now
+            tryFree: true
+        });
+
+        if (!updateAgent) {
+            return res.status(404).json({ success: false, message: "Ops Probleme Interne, Essayer une Autre Fois" }); // 404 if agent not found
+        }
+
+        res.status(200).json({ success: true, message: "Subscription Améliorer avec Succès" }); // 200 OK for successful update
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur Interne du Serveur" }); // 500 Internal Server Error
     }
 };

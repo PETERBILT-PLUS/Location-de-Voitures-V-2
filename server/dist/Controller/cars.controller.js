@@ -22,6 +22,7 @@ const agency_modal_js_2 = __importDefault(require("../Model/agency.modal.js"));
 const date_fns_1 = require("date-fns");
 const user_model_js_1 = __importDefault(require("../Model/user.model.js"));
 const notification_modal_js_1 = __importDefault(require("../Model/notification.modal.js"));
+const socket_js_1 = require("../socket/socket.js");
 const getCars = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const limit = 16; // Number of vehicles per page
@@ -186,6 +187,14 @@ const addReservation = (req, res) => __awaiter(void 0, void 0, void 0, function*
         yield findAgency.save();
         findCar.carEtat = "En Charge";
         yield findCar.save();
+        const socketReservation = yield reservation_model_js_1.default.findById(reservation._id).populate("agency").populate("car").populate("user");
+        if (!socketReservation)
+            return res.status(201).json({ success: true, message: "Réservation Crée avec Succès" });
+        const agentReceived = (0, socket_js_1.getUserSocketId)(findAgency._id);
+        if (agentReceived === undefined)
+            return res.status(201).json({ success: true, message: "Réservation Crée avec Succès" });
+        socket_js_1.io.to(agentReceived).emit("newReservation", socketReservation);
+        socket_js_1.io.to(agentReceived).emit("newNotification", notification);
         res.status(201).json({ success: true, message: "Réservation Crée avec Succès" });
     }
     catch (error) {

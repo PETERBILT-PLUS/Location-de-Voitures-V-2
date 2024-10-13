@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { Col, Form, Row } from 'react-bootstrap';
 import SubmitButton from '../../SubComponents/SubmitButton/SubmitButton';
 import { useFormik } from 'formik';
@@ -9,6 +9,9 @@ import { toast } from 'react-toastify';
 function UserProfile() {
     const SERVER: string = import.meta.env.VITE_SERVER as string;
 
+    useLayoutEffect(() => {
+        document.title = "Profile";
+    }, []);
 
     useEffect(() => {
         const getUserProfile = async () => {

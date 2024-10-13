@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.acceptDeclineReservation = exports.getReservations = exports.updateNotifications = exports.getNotifications = exports.getDashboard = exports.editVehicule = exports.getSingleCar = exports.deleteCar = exports.getCars = exports.updateAgentProfile = exports.getAgentProfile = void 0;
+exports.tryFree = exports.acceptDeclineReservation = exports.getReservations = exports.updateNotifications = exports.getNotifications = exports.getDashboard = exports.editVehicule = exports.getSingleCar = exports.deleteCar = exports.getCars = exports.updateAgentProfile = exports.getAgentProfile = void 0;
 const agency_modal_js_1 = __importDefault(require("../Model/agency.modal.js"));
 const vehicule_model_js_1 = __importDefault(require("../Model/vehicule.model.js"));
 const notification_modal_js_1 = __importDefault(require("../Model/notification.modal.js"));
@@ -247,3 +247,28 @@ const acceptDeclineReservation = (req, res) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.acceptDeclineReservation = acceptDeclineReservation;
+const tryFree = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _h;
+    try {
+        const agent_id = (_h = req.agent) === null || _h === void 0 ? void 0 : _h._id;
+        if (!agent_id) {
+            return res.status(400).json({ success: false, message: "Agent ID is missing" }); // 400 Bad Request if agent_id is missing
+        }
+        const agencyPay = yield agency_modal_js_1.default.findById(agent_id);
+        if (Boolean(agencyPay === null || agencyPay === void 0 ? void 0 : agencyPay.tryFree) === true)
+            return res.status(401).json({ success: false, message: "Pas Autorisé" });
+        const updateAgent = yield agency_modal_js_1.default.findByIdAndUpdate(agent_id, {
+            subscriptionExpiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days from now
+            tryFree: true
+        });
+        if (!updateAgent) {
+            return res.status(404).json({ success: false, message: "Ops Probleme Interne, Essayer une Autre Fois" }); // 404 if agent not found
+        }
+        res.status(200).json({ success: true, message: "Subscription Améliorer avec Succès" }); // 200 OK for successful update
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur Interne du Serveur" }); // 500 Internal Server Error
+    }
+});
+exports.tryFree = tryFree;

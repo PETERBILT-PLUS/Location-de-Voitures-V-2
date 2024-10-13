@@ -23,10 +23,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.webHooks = exports.createPaymentSession = exports.logoutAgent = exports.loginAgent = exports.registerAgent = void 0;
+exports.logoutAgent = exports.loginAgent = exports.registerAgent = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const stripe_1 = __importDefault(require("stripe"));
 const agency_modal_js_1 = __importDefault(require("../Model/agency.modal.js"));
 const registerAgent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -83,7 +82,7 @@ const loginAgent = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         // Generate JWT token
         const token = jsonwebtoken_1.default.sign({ agency_id: agency._id }, JWT_SECRET, { expiresIn: "90d" });
         const _a = agency.toObject(), { password } = _a, rest = __rest(_a, ["password"]);
-        res.status(200).cookie("token", token, { maxAge: 1000 * 60 * 60 * 24 * 90, httpOnly: true, secure: DEPLOYMENT == "development" ? false : true, sameSite: "strict" });
+        res.status(200).cookie("token", token, { maxAge: 1000 * 60 * 60 * 24 * 90, httpOnly: true, secure: DEPLOYMENT == "development" ? false : true, sameSite: "none" });
         res.status(200).json({ success: true, message: "User Succesfully login", agency: rest });
     }
     catch (error) {
@@ -103,64 +102,69 @@ const logoutAgent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.logoutAgent = logoutAgent;
-const createPaymentSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+/*
+export const createPaymentSession = async (req: Request, res: Response) => {
     try {
-        const agentId = (_b = req.agent) === null || _b === void 0 ? void 0 : _b._id;
+        const agentId = req.agent?._id;
+
         const CLIENT_DOMAIN = process.env.CLIENT_DOMAIN;
         const STRIPE_KEY = process.env.STRIPE_KEY;
         const SERVER_DOMAIN = process.env.SERVER_DOMAIN;
         if (!CLIENT_DOMAIN || !STRIPE_KEY || !SERVER_DOMAIN) {
             throw new Error("Environment variables not available");
         }
-        const stripe = new stripe_1.default(STRIPE_KEY);
+
+        const stripe = new Stripe(STRIPE_KEY);
         // Extract the user ID from the request (assuming the user is authenticated)
+
         // Create a payment session with Stripe
-        const session = yield stripe.checkout.sessions.create({
+        const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [{
-                    price_data: {
-                        currency: "MAD",
-                        product_data: {
-                            name: "plateforme de paiement mensuel",
-                            // You can add additional product details here
-                        },
-                        unit_amount: 9900, // Amount in cents (99 MAD)
+                price_data: {
+                    currency: "MAD",
+                    product_data: {
+                        name: "plateforme de paiement mensuel",
+                        // You can add additional product details here
                     },
-                    quantity: 1,
-                }],
+                    unit_amount: 9900, // Amount in cents (99 MAD)
+                },
+                quantity: 1,
+            }],
             mode: "payment", // Switch to payment mode for one-time payment
             success_url: `${CLIENT_DOMAIN}/payment-success`,
             cancel_url: `${CLIENT_DOMAIN}/payment-failed`,
             // You can add more options as needed, such as customer details
         });
+
         // Return the session URL to the client
         res.send({ url: session.url });
-    }
-    catch (error) {
+    } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-});
-exports.createPaymentSession = createPaymentSession;
-const webHooks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d, _e;
-    let signInSecretKey = "whsec_35b71eab6458bcfd58570b9afda912b04c9bd7b7d6f9bf5a2cfeeac5470ee945";
+}
+
+
+export const webHooks = async (req: Request, res: Response) => {
+    let signInSecretKey: string = "whsec_35b71eab6458bcfd58570b9afda912b04c9bd7b7d6f9bf5a2cfeeac5470ee945";
+
     const payload = req.body;
-    const sig = req.headers["stripe-signature"];
+    const sig: string | string[] | undefined = req.headers["stripe-signature"];
+
     const STRIPE_KEY = process.env.STRIPE_KEY;
-    if (!STRIPE_KEY)
-        throw new Error("the STRIPE_KEY is not available please check the .env file");
+    if (!STRIPE_KEY) throw new Error("the STRIPE_KEY is not available please check the .env file");
+
     let event;
     try {
-        const stripe = new stripe_1.default(STRIPE_KEY);
+        const stripe = new Stripe(STRIPE_KEY);
         if (sig) {
             event = stripe.webhooks.constructEvent(payload, sig, signInSecretKey);
             if (event.type === "checkout.session.completed") {
-                const agentId = (_e = (_d = (_c = event === null || event === void 0 ? void 0 : event.data) === null || _c === void 0 ? void 0 : _c.object) === null || _d === void 0 ? void 0 : _d.metadata) === null || _e === void 0 ? void 0 : _e.agentId;
+                const agentId = event?.data?.object?.metadata?.agentId;
                 const currentDate = new Date();
                 // Update the user's subscription expiration property
-                const agent = yield agency_modal_js_1.default.findByIdAndUpdate(agentId, {
+                const agent = await agencyModal.findByIdAndUpdate(agentId, {
                     // Add 30 days to the current date for subscription expiration
                     subscriptionExpiresAt: new Date(currentDate.getTime() + 1000 * 60 * 60 * 24 * 30),
                 }, {
@@ -169,17 +173,16 @@ const webHooks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 if (!agent) {
                     return res.status(404).json({ success: false, message: "User not found" });
                 }
+
                 res.status(201).json({ success: true, message: "Payment And Subscription Succesful" });
             }
-        }
-        else {
+        } else {
             throw new Error("the sig variable is not available please check the agent auth controller");
         }
-    }
-    catch (error) {
+
+    } catch (error) {
         console.log(error);
         res.status(400).json({ success: false, message: "Internal Server Error" });
         return false;
     }
-});
-exports.webHooks = webHooks;
+}*/ 

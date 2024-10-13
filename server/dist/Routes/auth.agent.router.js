@@ -20,6 +20,7 @@ agentRouter.post("/login", auth_agent_controller_js_1.loginAgent);
 agentRouter.post("/logout", auth_agent_controller_js_1.logoutAgent);
 agentRouter.post("/updateProfile", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.updateAgentProfile);
 agentRouter.post("/update-reservation-status", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.acceptDeclineReservation);
+agentRouter.post("/try-free", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.tryFree);
 agentRouter.put("/edit-car", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.editVehicule);
 agentRouter.delete("/delete-car/:car_id", protectAgentRoute_js_1.protectAgentRoute, agent_controller_js_1.deleteCar);
 // this is for stripe

@@ -18,17 +18,19 @@ const node_fetch_1 = __importDefault(require("node-fetch")); // Import `Response
 require("dotenv/config");
 const checkout_server_sdk_1 = __importDefault(require("@paypal/checkout-server-sdk"));
 const agency_modal_1 = __importDefault(require("../Model/agency.modal"));
-const environment = new checkout_server_sdk_1.default.core.SandboxEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_CLIENT_SECRET);
+// Update the environment based on production or sandbox mode
+const environment = process.env.DEPLOYMENT === 'production'
+    ? new checkout_server_sdk_1.default.core.LiveEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_CLIENT_SECRET)
+    : new checkout_server_sdk_1.default.core.SandboxEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_CLIENT_SECRET);
 const client = new checkout_server_sdk_1.default.core.PayPalHttpClient(environment);
-const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PORT = 8080 } = process.env;
-const base = "https://api-m.sandbox.paypal.com";
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
+const base = process.env.DEPLOYMENT === 'production'
+    ? "https://api-m.paypal.com" // Live PayPal API
+    : "https://api-m.sandbox.paypal.com"; // Sandbox PayPal API
 const app = (0, express_1.default)();
 // Parse post params sent in body in json format
 app.use(express_1.default.json());
-/**
- * Generate an OAuth 2.0 access token for authenticating with PayPal REST APIs.
- * @see https://developer.paypal.com/api/rest/authentication/
- */
+// Generate an OAuth 2.0 access token
 const generateAccessToken = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
@@ -50,10 +52,7 @@ const generateAccessToken = () => __awaiter(void 0, void 0, void 0, function* ()
         console.error("Failed to generate Access Token:", error);
     }
 });
-/**
- * Create an order to start the transaction.
- * @see https://developer.paypal.com/docs/api/orders/v2/#orders_create
- */
+// Create an order to start the transaction
 const createOrder = (cart) => __awaiter(void 0, void 0, void 0, function* () {
     const accessToken = yield generateAccessToken();
     if (!accessToken) {
@@ -82,10 +81,7 @@ const createOrder = (cart) => __awaiter(void 0, void 0, void 0, function* () {
     return handleResponse(response);
 });
 exports.createOrder = createOrder;
-/**
- * Capture payment for the created order to complete the transaction.
- * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
- */
+// Capture payment for the created order
 const captureOrder = (orderID, agency_id) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e;
     const accessToken = yield generateAccessToken();
@@ -101,12 +97,10 @@ const captureOrder = (orderID, agency_id) => __awaiter(void 0, void 0, void 0, f
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        const responseData = yield response.json(); // Get response data
-        // Log the full response for debugging
+        const responseData = yield response.json();
         if (!response.ok) {
             throw new Error(`PayPal API error: ${JSON.stringify(responseData)}`);
         }
-        // Check if payment was successful
         const captureStatus = (_e = (_d = (_c = (_b = (_a = responseData.purchase_units) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.payments) === null || _c === void 0 ? void 0 : _c.captures) === null || _d === void 0 ? void 0 : _d[0]) === null || _e === void 0 ? void 0 : _e.status;
         if (captureStatus === 'COMPLETED') {
             const agency = yield agency_modal_1.default.findByIdAndUpdate(agency_id, {
@@ -114,7 +108,7 @@ const captureOrder = (orderID, agency_id) => __awaiter(void 0, void 0, void 0, f
                 isPay: true,
                 lastPay: new Date(),
             }, { new: true });
-            return responseData; // Return successful capture
+            return responseData;
         }
         else {
             throw new Error('Payment was not completed.');
@@ -126,11 +120,7 @@ const captureOrder = (orderID, agency_id) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.captureOrder = captureOrder;
-/**
- * Handle the response from PayPal API.
- * @param response
- * @returns
- */
+// Handle the response from PayPal API
 function handleResponse(response) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -146,23 +136,19 @@ function handleResponse(response) {
         }
     });
 }
-// This is for money refund
+// Refund order function
 const refundOrder = (orderID) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // 1. Create request object
         const request = new checkout_server_sdk_1.default.payments.CapturesRefundRequest(orderID);
-        // 2. Create refund request body
         request.requestBody({
             amount: {
-                value: '9.9', // Amount to refund (USD or local currency equivalent)
-                currency_code: 'USD' // Change the currency if necessary
+                value: '9.9',
+                currency_code: 'USD',
             },
-            invoice_id: 'your_invoice_id', // Replace with the actual invoice ID if applicable
-            note_to_payer: 'Refund for your order' // Optional note to the payer
+            invoice_id: 'your_invoice_id',
+            note_to_payer: 'Refund for your order'
         });
-        // 3. Execute refund request
         const response = yield client.execute(request);
-        // 4. Return response
         return {
             jsonResponse: response.result,
             httpStatusCode: response.statusCode

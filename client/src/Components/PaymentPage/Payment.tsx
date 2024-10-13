@@ -1,16 +1,20 @@
 import axios, { AxiosResponse } from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 function Payment() {
-
     const agent = useSelector((state: any) => state.auth.agency.currentAgency);
     const SERVER: string = import.meta.env.VITE_SERVER as string;
     const [loading, setLoading] = useState<boolean>(false);
     const [tryFree, setTryFree] = useState<boolean>();
+    const navigate = useNavigate();
 
+    useLayoutEffect(() => {
+        document.title = "Payment";
+    }, []);
 
     useEffect(() => {
         const getState = async () => {
@@ -20,6 +24,8 @@ function Payment() {
                 if (res.data.success) {
                     setTryFree(res.data.tryFree);
                 }
+                console.log(res.data);
+                
             } catch (error: any) {
                 if (axios.isAxiosError(error)) {
                     toast.warning(error.response?.data.message);
@@ -34,6 +40,26 @@ function Payment() {
 
         if (agent) getState();
     }, []);
+
+    const handleTryFree = async () => {
+        try {
+            const res: AxiosResponse<{ success: boolean, message: string }> = await axios.post(`${SERVER}/agent/try-free`, null, { withCredentials: true });
+            if (res.data.success) {
+                toast.success(res.data.message);
+            }
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                toast.warning(error.response?.data.message);
+            } else {
+                console.error(error);
+                toast.error(error?.message || "Ops Erreur Interne");
+            }
+        }
+    };
+
+    const handlePayment = async () => {
+        navigate("/confirm-payment");
+    };
 
     if (loading) {
         return (
@@ -57,7 +83,7 @@ function Payment() {
                                 <p className="text-center fs-4" style={{ color: "var(--highBlue)" }}>Essayer Maintenant</p>
                                 <hr />
                                 <div className="d-flex flex-direction-row justify-content-center">
-                                    <button className="btn btn-info align-self-start text-white py-3 px-4">Essayer Gratuitement</button>
+                                    <button className="btn btn-info align-self-start text-white py-3 px-4" onClick={handleTryFree}>Essayer Gratuitement</button>
                                 </div>
                             </Card.Body>
                         </Card>
@@ -75,7 +101,7 @@ function Payment() {
                                 <p className="text-center fs-4" style={{ color: "var(--highBlue)" }}>Profiter de l'Offre</p>
                                 <hr />
                                 <div className="d-flex flex-direction-row justify-content-center">
-                                    <button className="btn btn-info align-self-start text-white py-3 px-4">Essayer Avec 9,9$</button>
+                                    <button className="btn btn-info align-self-start text-white py-3 px-4" onClick={handlePayment}>Essayer Avec 9,9$</button>
                                 </div>
                             </Card.Body>
                         </Card>

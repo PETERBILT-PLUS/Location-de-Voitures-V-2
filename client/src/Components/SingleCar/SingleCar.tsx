@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Container, Image, Spinner, Alert, Row, Col, Form, Button } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -23,6 +23,10 @@ function SingleCar() {
     const navigate = useNavigate();
     const SERVER: string = import.meta.env.VITE_SERVER as string;
     const params = useParams();
+
+    useLayoutEffect(() => {
+        document.title = "Voir Voiture";
+    }, []);
 
     useEffect(() => {
         const getSingleCar = async () => {

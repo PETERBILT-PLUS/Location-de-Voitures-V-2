@@ -4,31 +4,29 @@ import "dotenv/config";
 import paypal from '@paypal/checkout-server-sdk';
 import agencyModal, { IAgency } from "../Model/agency.modal";
 
-const environment = new paypal.core.SandboxEnvironment(
-  process.env.PAYPAL_CLIENT_ID!,
-  process.env.PAYPAL_CLIENT_SECRET!
-);
+// Update the environment based on production or sandbox mode
+const environment = process.env.DEPLOYMENT === 'production'
+  ? new paypal.core.LiveEnvironment(process.env.PAYPAL_CLIENT_ID!, process.env.PAYPAL_CLIENT_SECRET!)
+  : new paypal.core.SandboxEnvironment(process.env.PAYPAL_CLIENT_ID!, process.env.PAYPAL_CLIENT_SECRET!);
+
 const client = new paypal.core.PayPalHttpClient(environment);
 
-const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PORT = 8080 } = process.env;
-const base: string = "https://api-m.sandbox.paypal.com";
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
+const base: string = process.env.DEPLOYMENT === 'production'
+  ? "https://api-m.paypal.com"  // Live PayPal API
+  : "https://api-m.sandbox.paypal.com";  // Sandbox PayPal API
+
 const app = express();
 
 // Parse post params sent in body in json format
 app.use(express.json());
 
-/**
- * Type for PayPal Access Token Response
- */
 interface PayPalAccessTokenResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
 }
 
-/**
- * Type for Purchase Unit (used in creating an order)
- */
 interface PurchaseUnit {
   amount: {
     currency_code: string;
@@ -36,18 +34,12 @@ interface PurchaseUnit {
   };
 }
 
-/**
- * Type for the order creation payload
- */
 interface CreateOrderPayload {
   intent: "CAPTURE";
   purchase_units: PurchaseUnit[];
 }
 
-/**
- * Generate an OAuth 2.0 access token for authenticating with PayPal REST APIs.
- * @see https://developer.paypal.com/api/rest/authentication/
- */
+// Generate an OAuth 2.0 access token
 const generateAccessToken = async (): Promise<string | undefined> => {
   try {
     if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
@@ -73,10 +65,7 @@ const generateAccessToken = async (): Promise<string | undefined> => {
   }
 };
 
-/**
- * Create an order to start the transaction.
- * @see https://developer.paypal.com/docs/api/orders/v2/#orders_create
- */
+// Create an order to start the transaction
 export const createOrder = async (cart: any): Promise<any> => {
   const accessToken = await generateAccessToken();
   if (!accessToken) {
@@ -108,10 +97,7 @@ export const createOrder = async (cart: any): Promise<any> => {
   return handleResponse(response);
 };
 
-/**
- * Capture payment for the created order to complete the transaction.
- * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
- */
+// Capture payment for the created order
 export const captureOrder = async (orderID: string, agency_id: string): Promise<any> => {
   const accessToken = await generateAccessToken();
   if (!accessToken) {
@@ -128,15 +114,12 @@ export const captureOrder = async (orderID: string, agency_id: string): Promise<
       },
     });
 
-    const responseData = await response.json(); // Get response data
-
-    // Log the full response for debugging
+    const responseData = await response.json(); 
 
     if (!response.ok) {
       throw new Error(`PayPal API error: ${JSON.stringify(responseData)}`);
     }
 
-    // Check if payment was successful
     const captureStatus = responseData.purchase_units?.[0]?.payments?.captures?.[0]?.status;
     if (captureStatus === 'COMPLETED') {
       const agency: IAgency | null = await agencyModal.findByIdAndUpdate(agency_id, {
@@ -144,7 +127,7 @@ export const captureOrder = async (orderID: string, agency_id: string): Promise<
         isPay: true,
         lastPay: new Date(),
       }, { new: true });
-      return responseData; // Return successful capture
+      return responseData; 
     } else {
       throw new Error('Payment was not completed.');
     }
@@ -154,11 +137,7 @@ export const captureOrder = async (orderID: string, agency_id: string): Promise<
   }
 };
 
-/**
- * Handle the response from PayPal API.
- * @param response 
- * @returns 
- */
+// Handle the response from PayPal API
 async function handleResponse(response: Response): Promise<any> {
   try {
     const jsonResponse = await response.json();
@@ -172,26 +151,21 @@ async function handleResponse(response: Response): Promise<any> {
   }
 }
 
-// This is for money refund
+// Refund order function
 export const refundOrder = async (orderID: string) => {
   try {
-    // 1. Create request object
     const request = new paypal.payments.CapturesRefundRequest(orderID);
-
-    // 2. Create refund request body
     request.requestBody({
       amount: {
-        value: '9.9',  // Amount to refund (USD or local currency equivalent)
-        currency_code: 'USD'  // Change the currency if necessary
+        value: '9.9',
+        currency_code: 'USD',
       },
-      invoice_id: 'your_invoice_id',  // Replace with the actual invoice ID if applicable
-      note_to_payer: 'Refund for your order'  // Optional note to the payer
+      invoice_id: 'your_invoice_id',
+      note_to_payer: 'Refund for your order'
     });
 
-    // 3. Execute refund request
     const response = await client.execute(request);
 
-    // 4. Return response
     return {
       jsonResponse: response.result,
       httpStatusCode: response.statusCode

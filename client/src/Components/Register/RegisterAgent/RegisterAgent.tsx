@@ -1,8 +1,7 @@
-import React from "react";
+import { useLayoutEffect } from "react";
 import { Container, Form, Row } from "react-bootstrap";
 import "./RegisterAgent.css";
 import { useFormik } from "formik";
-import { registerAgentSchema } from "../../../Configuration/Schema.ts";
 import SubmitButton from "../../../SubComponents/SubmitButton/SubmitButton.tsx";
 import axios, { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
@@ -11,6 +10,10 @@ import { agentProfileSchema } from "../../../Configuration/agentProfile.ts";
 
 function RegisterAgent() {
     const navigate = useNavigate();
+
+    useLayoutEffect(() => {
+        document.title = "Register (Agence)";
+    }, []);
 
     const cities = [
         "Agadir", "Al Hoceima", "Asilah", "Azemmour", "Azrou",

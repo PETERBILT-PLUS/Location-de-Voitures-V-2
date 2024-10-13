@@ -1,14 +1,12 @@
-import { useEffect } from 'react';
-import { Button, Col, Container, Form, Nav, NavDropdown, Navbar, Row } from 'react-bootstrap';
+import { useEffect, useLayoutEffect } from 'react';
+import { Col, Form, Row } from 'react-bootstrap';
 import SubmitButton from '../../SubComponents/SubmitButton/SubmitButton';
-import { Link } from 'react-router-dom';
-import { FormikHelpers, useFormik } from 'formik';
+import { useFormik } from 'formik';
 import { IAgentProfile, agentProfileSchema } from '../../Configuration/agentProfile';
 import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 
 function AgenceAdminProfile() {
-
     const cities: string[] = [
         "Agadir",
         "Al Hoceima",
@@ -64,6 +62,10 @@ function AgenceAdminProfile() {
     ];
     const SERVER: string = import.meta.env.VITE_SERVER as string;
 
+    useLayoutEffect(() => {
+        document.title = "Profile";
+    }, []);
+
 
     useEffect(() => {
         const getUserProfile = async () => {
@@ -86,6 +88,7 @@ function AgenceAdminProfile() {
                         numeroDinscription: profileData.registrationNumber || '',
                         numeroDeLisenceCommercial: profileData.businessLicenseNumber || '',
                         NumeroDePoliceDassurance: profileData.insurancePolicyNumber || '',
+                        paypalAccountId: profileData.paypalAccountId || '',
                         localisation: profileData.localisation || '',
                     });
                 }
@@ -103,7 +106,7 @@ function AgenceAdminProfile() {
     }, []);
 
 
-    const onSubmit = async (state: IAgentProfile, action: FormikHelpers<IAgentProfile>) => {
+    const onSubmit = async (state: IAgentProfile) => {
         try {
             const res: AxiosResponse<any, any> = await axios.post(`${SERVER}/agent/updateProfile`, state, { withCredentials: true });
             if (res.data.success) {
@@ -135,6 +138,7 @@ function AgenceAdminProfile() {
             numeroDinscription: '',
             numeroDeLisenceCommercial: '',
             NumeroDePoliceDassurance: '',
+            paypalAccountId: '',
             localisation: '',
         },
         onSubmit,
@@ -230,6 +234,12 @@ function AgenceAdminProfile() {
                             <Form.Label className="pt-2">Numéro de police d'assurance :</Form.Label>
                             <Form.Control type="text" placeholder="Numéro de police d'assurance" name="NumeroDePoliceDassurance" onChange={handleChange} onBlur={handleBlur} value={values.NumeroDePoliceDassurance} />
                             {errors.NumeroDePoliceDassurance && touched.NumeroDePoliceDassurance && <p className="text-danger small pt-2">{errors.NumeroDePoliceDassurance}</p>}
+                        </Form.Group>
+
+                        <Form.Group className="py-2" controlId="paypalAccountId">
+                            <Form.Label className="pt-2">Compte Paypal Id :</Form.Label>
+                            <Form.Control type="text" placeholder="Numéro de police d'assurance" name="paypalAccountId" onChange={handleChange} onBlur={handleBlur} value={values.paypalAccountId} />
+                            {errors.paypalAccountId && touched.paypalAccountId && <p className="text-danger small pt-2">{errors.paypalAccountId}</p>}
                         </Form.Group>
 
                         <Form.Group className="py-2" controlId="formInsurancePolicyNumber">

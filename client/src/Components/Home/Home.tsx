@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useLayoutEffect } from 'react';
 import { Container, Card, Spinner, Row, Col, Form } from 'react-bootstrap';
 import axios, { AxiosResponse } from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -53,6 +53,10 @@ function Home() {
     });
     const [myCount, setMyCount] = useState<number>();
     const [state, setState] = useState<boolean>(false);
+
+    useLayoutEffect(() => {
+        document.title = "Acceuil";
+    }, []);
 
     // Fetch vehicles data based on filters and pagination
     const fetchVehicles = async (reset: boolean = false) => {

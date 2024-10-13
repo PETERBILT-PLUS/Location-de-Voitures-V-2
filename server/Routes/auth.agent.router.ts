@@ -1,7 +1,7 @@
 import express from "express";
 import { createPaymentSession, loginAgent, logoutAgent, registerAgent, webHooks } from "../Controller/auth.agent.controller.js";
 import { protectAgentRoute } from "../middleware/protectAgentRoute.js";
-import { acceptDeclineReservation, deleteCar, editVehicule, getAgentProfile, getCars, getDashboard, getNotifications, getReservations, getSingleCar, updateAgentProfile, updateNotifications } from "../Controller/agent.controller.js";
+import { acceptDeclineReservation, deleteCar, editVehicule, getAgentProfile, getCars, getDashboard, getNotifications, getReservations, getSingleCar, tryFree, updateAgentProfile, updateNotifications } from "../Controller/agent.controller.js";
 
 const agentRouter = express.Router();
 
@@ -17,6 +17,7 @@ agentRouter.post("/login", loginAgent);
 agentRouter.post("/logout", logoutAgent);
 agentRouter.post("/updateProfile", protectAgentRoute, updateAgentProfile);
 agentRouter.post("/update-reservation-status", protectAgentRoute, acceptDeclineReservation);
+agentRouter.post("/try-free", protectAgentRoute, tryFree);
 agentRouter.put("/edit-car", protectAgentRoute, editVehicule);
 agentRouter.delete("/delete-car/:car_id", protectAgentRoute, deleteCar);
 

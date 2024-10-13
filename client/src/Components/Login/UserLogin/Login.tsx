@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginUser } from '../../../Configuration/userSlice';
+import { useLayoutEffect } from 'react';
 
 // تعريف التحقق من صحة البيانات لنموذج تسجيل الدخول
 const loginSchema = yup.object().shape({
@@ -24,6 +25,10 @@ function Login() {
     const SERVER: string = import.meta.env.VITE_SERVER as string;
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    useLayoutEffect(() => {
+        document.title = "Login (Utilisateur)";
+    }, []);
 
     const onSubmit = async (values: ILogin, actions: FormikHelpers<ILogin>) => {
         try {

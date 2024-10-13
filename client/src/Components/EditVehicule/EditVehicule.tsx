@@ -9,7 +9,7 @@ import { carMarques, typesVoitures } from "../../Configuration/values";
 import SubmitButton from "../../SubComponents/SubmitButton/SubmitButton";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { app } from "../../Configuration/firebase";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 function EditVehicule() {
     const SERVER: string = import.meta.env.VITE_SERVER as string;
@@ -17,6 +17,10 @@ function EditVehicule() {
     const [uploadByte, setUploadByte] = useState<number>(0);
     const [imageLoading, setImageLoading] = useState<boolean>(false);
     const params = useParams();
+
+    useLayoutEffect(() => {
+        document.title = "Modifier un Vehicule";
+    }, []);
 
     useEffect(() => {
         const getVehiculeDetails = async () => {
