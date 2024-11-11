@@ -15,7 +15,7 @@ function MyPaypalButton() {
     const agency = useSelector((state: any) => state.auth.agency.currentAgency);
     const navigate = useNavigate();
 
-    const createOrder = async (data: any, actions: any): Promise<string> => {
+    const createOrder = async (): Promise<string> => {
         try {
             const response = await fetch(`${SERVER}/my-server/create-paypal-order`, {
                 method: "POST",

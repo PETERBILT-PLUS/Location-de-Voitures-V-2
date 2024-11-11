@@ -55,7 +55,7 @@ function SuperAdminUsers() {
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const { scrollTop, offsetHeight, scrollHeight } = e.currentTarget;
 
-        if (scrollTop + scrollHeight >= scrollHeight) {
+        if (scrollTop + offsetHeight >= scrollHeight) {
             getMoreUsers();
         }
     };

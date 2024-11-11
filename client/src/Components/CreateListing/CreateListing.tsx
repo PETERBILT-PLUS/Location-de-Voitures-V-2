@@ -1,6 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { Form, Button, Container, Nav, NavDropdown, Navbar, Row, Image } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Form, Button, Container, Row, Image } from 'react-bootstrap';
 import "./CreateListing.css";
 import { FormikHelpers, useFormik } from 'formik';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
