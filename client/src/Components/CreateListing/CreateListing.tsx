@@ -41,10 +41,6 @@ export interface FormValues {
 
 
 function CreateListing() {
-    const [isDisabled, setIsDisabled] = React.useState<boolean>(false);
-    const [isDisabledMarque, setIsDisabledMarque] = React.useState<boolean>(false);
-    const [isDisabledType, setIsDisabledType] = React.useState<boolean>(false);
-    const [isDisabledEtat, setIsDisabledEtat] = React.useState<boolean>(false);
     const [uploadByte, setUploadByte] = React.useState<number>(0);
     const [imageLoading, setImageLoading] = React.useState<boolean>(false);
     const [files, setFiles] = React.useState<any>([]);
@@ -169,8 +165,8 @@ function CreateListing() {
 
                             <Form.Group className="mb-3">
                                 <Form.Label className="px-1">Type du carburant</Form.Label>
-                                <Form.Select onClick={() => setIsDisabled(true)} onChange={handleChange} onBlur={handleBlur} value={values.carFuel} name="carFuel">
-                                    <option disabled={isDisabled}>Type du carburant</option>
+                                <Form.Select defaultValue="" onChange={handleChange} onBlur={handleBlur} value={values.carFuel} name="carFuel">
+                                    <option disabled value="">Type du carburant</option>
                                     <option>Essence</option>
                                     <option>Diesel</option>
                                     <option>Hybride</option>
@@ -181,8 +177,8 @@ function CreateListing() {
 
                             <Form.Group className="mb-3">
                                 <Form.Label className="px-1">Marque du véhicule</Form.Label>
-                                <Form.Select onClick={() => setIsDisabledMarque(true)} value={values.carMarque} onChange={handleChange} onBlur={handleBlur} name="carMarque">
-                                    <option disabled={isDisabledMarque}>Marque du véhicule</option>
+                                <Form.Select defaultValue="" value={values.carMarque} onChange={handleChange} onBlur={handleBlur} name="carMarque">
+                                    <option disabled value="">Marque du véhicule</option>
                                     {carMarques.map((elem, index) => (
                                         <option key={index}>{elem}</option>
                                     ))}
@@ -198,8 +194,8 @@ function CreateListing() {
 
                             <Form.Group className="mb-3">
                                 <Form.Label className="px-1">Type de voiture</Form.Label>
-                                <Form.Select onClick={() => setIsDisabledType(true)} onChange={handleChange} onBlur={handleBlur} value={values.carType} name="carType">
-                                    <option disabled={isDisabledType}>Type de voiture</option>
+                                <Form.Select defaultValue="" onChange={handleChange} onBlur={handleBlur} value={values.carType} name="carType">
+                                    <option disabled value="">Type de voiture</option>
                                     {typesVoitures.map((elem, index) => (
                                         <option key={index}>{elem}</option>
                                     ))}
@@ -225,8 +221,8 @@ function CreateListing() {
                                 <Form.Text>
                                     Vous devez indiquer si votre voiture est disponible ou en charge pour être visible par les clients.
                                 </Form.Text>
-                                <Form.Select onClick={() => setIsDisabledEtat(true)} onChange={handleChange} onBlur={handleBlur} value={values.carEtat} name="carEtat">
-                                    <option disabled={isDisabledEtat}>État de Vehicule</option>
+                                <Form.Select defaultValue="" onChange={handleChange} onBlur={handleBlur} value={values.carEtat} name="carEtat">
+                                    <option disabled value="">État de Vehicule</option>
                                     <option>Disponible</option>
                                     <option>En Charge</option>
                                 </Form.Select>
@@ -307,7 +303,7 @@ function CreateListing() {
                     </div>
                 </Row>
             </Container>
-        </div>
+        </div >
     )
 }
 
