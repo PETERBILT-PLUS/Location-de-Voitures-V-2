@@ -18,6 +18,7 @@ function LoginAgent() {
     const navigate = useNavigate();
     const [state, setState] = useState<boolean>();
     const agency = useSelector((state: any) => state.auth.agency.currentAgency);
+    const SERVER: string = import.meta.env.VITE_SERVER as string;
 
     useLayoutEffect(() => {
         document.title = "Login (Agence)";
@@ -26,7 +27,7 @@ function LoginAgent() {
     const onSubmit = async (values: any, actions: any) => {
         try {
             setLoading(true);
-            const res: AxiosResponse<any, any> = await axios.post("http://localhost:5000/agent/login", values, { withCredentials: true });
+            const res: AxiosResponse<any, any> = await axios.post(`${SERVER}/agent/login`, values, { withCredentials: true });
             if (res.data.success) {
                 if (!agency) {
                     setState(true);

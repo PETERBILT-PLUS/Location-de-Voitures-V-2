@@ -9,11 +9,17 @@ export const registerAgent = async (req: Request, res: Response) => {
     try {
         // Input validation
         const {
-            nom, prenom, email, password, tel: phoneNumber, adress: address, city, website, numeroDinscription: registrationNumber,
-            numeroDeLicenceCommerciale: businessLicenseNumber, numeroDePoliceDassurance: insurancePolicyNumber, paypalAccountId
+            nom, prenom, email, password,telephone: phoneNumber, adress: address, ville: city, website, numeroDinscription: registrationNumber,
+            numeroDeLisenceCommercial: businessLicenseNumber, NumeroDePoliceDassurance: insurancePolicyNumber, localisation, paypalAccountId
         } = req.body;
 
-        if (!nom || !prenom || !email || !password || !phoneNumber || !address || !city || !registrationNumber || !businessLicenseNumber || !insurancePolicyNumber || !paypalAccountId) {
+        console.log(req.body);
+        console.log(paypalAccountId);
+
+        console.log(nom, prenom, email, password, phoneNumber, address, city, registrationNumber, businessLicenseNumber, insurancePolicyNumber, localisation, paypalAccountId);
+
+
+        if (!nom || !prenom || !email || !password || !phoneNumber || !address || !city || !registrationNumber || !businessLicenseNumber || !insurancePolicyNumber || !localisation || !paypalAccountId) {
             return res.status(403).json({ success: false, message: "Missing Credentials" });
         }
 

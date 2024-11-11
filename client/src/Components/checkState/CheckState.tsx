@@ -28,7 +28,7 @@ function CheckState() {
                 if (axios.isAxiosError(error)) {
                     if (agency && error.response?.status === 403) {
                         toast.warning(error.response?.data.message);
-                        navigate("/confirm-payment");
+                        navigate("/payment");
                     } else if (user && error.response?.status === 403) {
                         toast.warning(error.response?.data.message);
                         navigate("/login");

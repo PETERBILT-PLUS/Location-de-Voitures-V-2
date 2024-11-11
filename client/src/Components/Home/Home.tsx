@@ -53,6 +53,7 @@ function Home() {
     });
     const [myCount, setMyCount] = useState<number>();
     const [state, setState] = useState<boolean>(false);
+    const SERVER: string = import.meta.env.VITE_SERVER as string;
 
     useLayoutEffect(() => {
         document.title = "Acceuil";
@@ -65,7 +66,7 @@ function Home() {
         setLoading(true);
 
         try {
-            const response: AxiosResponse<any, any> = await axios.get(`http://localhost:5000/user`, {
+            const response: AxiosResponse<any, any> = await axios.get(`${SERVER}/user`, {
                 params: {
                     cursor: reset ? null : nextCursor,
                     marque: filter.marque,

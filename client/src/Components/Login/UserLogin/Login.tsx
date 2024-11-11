@@ -44,7 +44,6 @@ function Login() {
                     navigate("/super-admin");
                 } else {
                     // Regular User Login
-                    alert("1");
                     toast.success("Utilisateur connecté avec succès");
                     actions.resetForm();
                     dispatch(loginUser(res.data.user));

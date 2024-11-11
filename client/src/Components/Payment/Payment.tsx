@@ -2,7 +2,7 @@ import { Card, Col, Container, Row } from "react-bootstrap";
 import MyPaypalButton from "../../SubComponents/MyPaypalButton/MyPaypalButton.tsx";
 import { useLayoutEffect } from "react";
 
-function Payment() {
+function ConfirmPayment() {
 
     useLayoutEffect(() => {
         document.title = "Payment";
@@ -30,4 +30,4 @@ function Payment() {
     )
 }
 
-export default Payment;
+export default ConfirmPayment;

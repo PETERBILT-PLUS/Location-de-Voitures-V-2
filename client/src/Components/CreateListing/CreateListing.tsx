@@ -49,6 +49,7 @@ function CreateListing() {
     const [uploadByte, setUploadByte] = React.useState<number>(0);
     const [imageLoading, setImageLoading] = React.useState<boolean>(false);
     const [files, setFiles] = React.useState<any>([]);
+    const SERVER: string = import.meta.env.VITE_SERVEr as string;
 
     useLayoutEffect(() => {
         document.title = "Ajouter un Vehicule";
@@ -112,7 +113,7 @@ function CreateListing() {
     const onSubmit = async (values: FormValues, actions: FormikHelpers<FormValues>) => {
         if (values.carPhotos.length < 1) return toast.warning("Minimum 5 photos");
         console.log(values);
-        const res: AxiosResponse<any, any> = await axios.post("http://localhost:5000/cars/create-listing", values, { withCredentials: true });
+        const res: AxiosResponse<any, any> = await axios.post(`${SERVER}/cars/create-listing`, values, { withCredentials: true });
         if (res.data.success && res.status === 201) {
             toast.success("Vehicule Crée Succès");
             actions.resetForm();
@@ -155,7 +156,7 @@ function CreateListing() {
 
     return (
         <div className="create-listing-wrapper">
-            
+
             <Container className="py-5">
                 <h1 className="title text-center display-6 pb-5 pt-3">Ajouter un Vehicule</h1>
                 <Row className="border mx-3 py-4 rounded">

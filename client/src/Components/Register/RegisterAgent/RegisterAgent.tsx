@@ -10,6 +10,7 @@ import { agentProfileSchema } from "../../../Configuration/agentProfile.ts";
 
 function RegisterAgent() {
     const navigate = useNavigate();
+    const SERVER: string = import.meta.env.VITE_SERVER as string;
 
     useLayoutEffect(() => {
         document.title = "Register (Agence)";
@@ -31,8 +32,12 @@ function RegisterAgent() {
     ];
 
     const onSubmit = async (values: any, action: any) => {
+        console.log(values);
+        console.log(errors);
+
+
         try {
-            const res: AxiosResponse<any, any> = await axios.post("http://localhost:5000/agent/register", values);
+            const res: AxiosResponse<any, any> = await axios.post(`${SERVER}/agent/register`, values, { withCredentials: true });
             if (res.data.success) {
                 toast.success("Registrement Succès");
                 action.resetForm();

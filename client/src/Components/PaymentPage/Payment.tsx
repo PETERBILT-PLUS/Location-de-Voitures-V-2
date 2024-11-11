@@ -46,6 +46,7 @@ function Payment() {
             const res: AxiosResponse<{ success: boolean, message: string }> = await axios.post(`${SERVER}/agent/try-free`, null, { withCredentials: true });
             if (res.data.success) {
                 toast.success(res.data.message);
+                navigate("/agence-dashboard");
             }
         } catch (error: any) {
             if (axios.isAxiosError(error)) {

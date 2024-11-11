@@ -28,7 +28,7 @@ export const agentProfileSchema = yup.object<IAgentProfile>().shape({
     telephone: yup.string().matches(/^[0-9]+$/, "Le numéro de téléphone est invalide").required("Le numéro de téléphone est obligatoire"),
     adress: yup.string().required("L'adresse est obligatoire"),
     ville: yup.string().required("La ville est obligatoire"),
-    website: yup.string().url("L'URL du site Web est invalide").nullable(),
+    website: yup.string().url("L'URL du site Web est invalide").notRequired(),
     numeroDinscription: yup.string().required("Le numéro d'inscription est obligatoire"),
     numeroDeLisenceCommercial: yup.string().required("Le numéro de licence commerciale est obligatoire"),
     NumeroDePoliceDassurance: yup.string().required("Le numéro de police d'assurance est obligatoire"),
