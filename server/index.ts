@@ -21,13 +21,14 @@ import superAdminStateRouter from "./Routes/superAdminState.router.js";
 config();
 
 const PORT = process.env.PORT || 5000;
+const CLIENT_DOMAIN: string = process.env.CLIENT_DOMAIN as string;
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
     credentials: true,
-    origin: "http://localhost:5173", // Set this to your frontend's domain
+    origin: CLIENT_DOMAIN, // Set this to your frontend's domain
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 app.use(bodyParser.urlencoded({ extended: true }));
