@@ -67,7 +67,7 @@ function AgenceAdminVehicules() {
         <div>
             <div className="py-5 d-flex justify-content-center">
                 <Container>
-                    <Row xs={1} md={3} className="g-4">
+                    <Row xs={1} md={3} lg={4} className="g-4">
                         <Col>
                             <Card className="shadow h-100">
                                 <Card.Header className="py-3 text-center bg-primary text-white">Vehicules</Card.Header>
@@ -84,20 +84,31 @@ function AgenceAdminVehicules() {
             <div className="py-5">
                 <Container>
                     <h1 className="text-center title display-6 pb-5 pt-3">Votre Voitures</h1>
-                    <Row xs={1} md={3} className="g-4">
+                    <Row xs={1} sm={2} md={3} lg={4} className="g-4">
                         {data.length ? (
                             data.map((elem: any) => {
                                 return (
                                     <Col key={elem._id}>
-                                        <Card style={{ width: '18rem' }}>
-                                            <Card.Img variant="top" src={elem.carPhotos[0]}  style={{objectFit: "cover"}} />
+                                        <Card className="shadow h-100">
+                                            <Card.Img 
+                                                variant="top" 
+                                                src={elem.carPhotos[0]} 
+                                                style={{ objectFit: "cover", height: "200px" }} 
+                                            />
                                             <Card.Body>
                                                 <Card.Title className="text-primary">Nom: {elem.carName}</Card.Title>
                                                 <Card.Text>Marque: {elem.carMarque}</Card.Text>
                                                 <Card.Text>Etat: {elem.carEtat}</Card.Text>
-                                                <div className="d-flex gap-3 border-top pt-3">
-                                                    <Link to={`/agence-dashboard/edit-vehicule/${elem._id}`}><button className="edit-car-btn">Modifier</button></Link>
-                                                    <button className="delete-car-btn" onClick={() => handleShow(elem._id)}>Supprimer</button>
+                                                <div className="d-flex justify-content-center align-items-center border-top pt-3 gap-5">
+                                                    <Link to={`/agence-dashboard/edit-vehicule/${elem._id}`}>
+                                                        <button className="edit-car-btn btn btn-sm btn-outline-primary">Modifier</button>
+                                                    </Link>
+                                                    <button 
+                                                        className="delete-car-btn btn btn-sm btn-outline-danger" 
+                                                        onClick={() => handleShow(elem._id)}
+                                                    >
+                                                        Supprimer
+                                                    </button>
                                                 </div>
                                             </Card.Body>
                                         </Card>

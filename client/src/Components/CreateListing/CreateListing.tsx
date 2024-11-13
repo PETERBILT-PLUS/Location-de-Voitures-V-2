@@ -44,7 +44,7 @@ function CreateListing() {
     const [uploadByte, setUploadByte] = React.useState<number>(0);
     const [imageLoading, setImageLoading] = React.useState<boolean>(false);
     const [files, setFiles] = React.useState<any>([]);
-    const SERVER: string = import.meta.env.VITE_SERVEr as string;
+    const SERVER: string = import.meta.env.VITE_SERVER as string;
 
     useLayoutEffect(() => {
         document.title = "Ajouter un Vehicule";
@@ -106,18 +106,19 @@ function CreateListing() {
 
 
     const onSubmit = async (values: FormValues, actions: FormikHelpers<FormValues>) => {
-        if (values.carPhotos.length < 1) return toast.warning("Minimum 5 photos");
-        console.log(values);
-        const res: AxiosResponse<any, any> = await axios.post(`${SERVER}/cars/create-listing`, values, { withCredentials: true });
-        if (res.data.success && res.status === 201) {
-            toast.success("Vehicule Crée Succès");
-            actions.resetForm();
-        } else if (res.status === 401) {
-            toast.warning("Entres Tous les informations du Vehicule");
-            return false;
-        } else if (res.status === 500) {
-            toast.error("Ops Erreur de serveur");
-            return false;
+        if (values.carPhotos.length < 3) return toast.warning("Minimum 3 photos");
+        try {
+            const res: AxiosResponse<any> = await axios.post(`${SERVER}/cars/create-listing`, values, { withCredentials: true });
+            if (res.data.success) {
+                actions.resetForm();
+            }
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                toast.warning(error.response?.data.message);
+            } else {
+                console.error(error);
+                toast.error(error?.message);
+            }
         }
     }
 

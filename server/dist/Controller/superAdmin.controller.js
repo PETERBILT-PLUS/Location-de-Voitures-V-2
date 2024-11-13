@@ -109,7 +109,6 @@ const getReservations = (req, res) => __awaiter(void 0, void 0, void 0, function
         // Extract query parameters
         const skip = req.query.skip ? Number(req.query.skip) : 0;
         const search = req.query.search ? req.query.search.toString().trim() : null;
-        console.log("Search query:", search); // Debugging: log search query
         let criteriaSearch = {}; // Initialize search criteria for reservations
         if (search) {
             // Step 1: Perform a case-insensitive regex search on the user's email

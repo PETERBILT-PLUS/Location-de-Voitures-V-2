@@ -25,10 +25,12 @@ function SuperAdminDashboard() {
             try {
                 setLoading(true);
                 const res: AxiosResponse<{ success: boolean, data: any, message?: string }> = await axios.get(`${SERVER}/super-admin/get-dashboard`, { withCredentials: true });
+                console.log(res.data);
+                
                 if (res.data.success) {
-                    setUsers(res.data.data.users[0]?.total ? res.data.data.users[0].total : []);
-                    setAgencys(res.data.data.agencys[0]?.total ? res.data.data.agencys[0].total : []);
-                    setReservations(res.data.data.reservations[0].total ? res.data.data.reservations[0].total : []);
+                    setUsers(res.data.data.users[0]?.total ? res.data.data.users[0]?.total : []);
+                    setAgencys(res.data.data.agencys[0]?.total ? res.data.data.agencys[0]?.total : []);
+                    setReservations(res.data.data.reservations[0]?.total ? res.data.data.reservations[0]?.total : []);
                 }
             } catch (error: any) {
                 if (axios.isAxiosError(error)) {

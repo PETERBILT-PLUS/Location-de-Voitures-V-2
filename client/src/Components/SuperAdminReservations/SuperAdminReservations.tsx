@@ -124,80 +124,98 @@ function SuperAdminReservations() {
             </div>
 
 
-            <Row className="py-5 row" xs={12} style={{ overflowY: "scroll", maxHeight: "500px" }} onScroll={handleScroll}>
+            <Row className="py-5 row" xs={12} style={{ overflowY: "scroll", height: "600px" }} onScroll={handleScroll}>
                 <Container className="py-5">
-                    {!!reservations.length && reservations.map((elem: any, index: number) => {
-                        return (
-                            <Col xs={12} className="px-0" key={index} style={{ overflowX: "hidden" }}>
-                                <Card className="px-2 px-md-0">
-                                    <Row xs={12} md={4}>
-                                        {/* Car Image Section */}
-                                        <Col xs={12} md={4}>
-                                            <Card.Header className="px-0 py-0" style={{ height: "100%" }}>
-                                                <Card.Img
-                                                    src={elem.car.carPhotos[0]}
-                                                    style={{ borderRadius: "", height: "100%", objectFit: "cover" }}
-                                                    alt={`${elem.car.carMarque} ${elem.car.carName}`}
-                                                />
-                                            </Card.Header>
-                                        </Col>
+                    {reservations.length > 0 ? (
+                        reservations.map((elem: any, index: number) => {
+                            if (!elem.car) {
+                                return (
+                                    <Col xs={12} className="px-0" key={index} style={{ overflowX: "hidden" }}>
+                                        <Card className="px-2 py-2 px-md-0">
+                                            <Card.Body className="text-center">
+                                                <h5 className="text-danger">La voiture pas trouvé</h5>
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
+                                );
+                            }
 
-                                        {/* User and Reservation Info */}
-                                        <Col xs={12} md={4} className="py-3">
-                                            <Card.Title className="text-primary fs-5 pb-3">
-                                                Nom Client: {elem.user.nom + " " + elem.user.prenom}
-                                            </Card.Title>
-                                            <Card.Text className="fs-6 text-secondary my-2">
-                                                Tél Client: {elem.phoneNumber}
-                                            </Card.Text>
-                                            <Card.Text className="fs-6 text-secondary my-2">
-                                                E-mail Client: {elem.user.email}
-                                            </Card.Text>
-                                            <Card.Text className="fs-6 text-secondary my-2">
-                                                Statut: <span className="bg-success p-2 rounded text-white">{elem.status}</span>
-                                            </Card.Text>
-                                            <Card.Text className="fs-6 text-secondary my-2">
-                                                Prix Total: {elem.priceTotal} DH
-                                            </Card.Text>
-                                            <Card.Text className="fs-6 text-secondary my-2">
-                                                Départ: {new Date(elem.timeStart).toLocaleDateString()}
-                                            </Card.Text>
-                                            <Card.Text className="fs-6 text-secondary my-2">
-                                                Arrivée: {new Date(elem.timeEnd).toLocaleDateString()}
-                                            </Card.Text>
-                                            <Card.Text className="fs-6 text-secondary my-2">
-                                                Durée Totale: {elem.totalDays} jours
-                                            </Card.Text>
-                                        </Col>
+                            return (
+                                <Col xs={12} className="px-0" key={index} style={{ overflowX: "hidden" }}>
+                                    <Card className="px-2 py-2 px-md-0">
+                                        <Row xs={12} md={4}>
+                                            {/* Car Image Section */}
+                                            <Col xs={12} md={4}>
+                                                <Card.Header className="px-0 py-0" style={{ height: "100%" }}>
+                                                    <Card.Img
+                                                        src={elem.car.carPhotos[0]}
+                                                        style={{ borderRadius: "", height: "100%", objectFit: "cover" }}
+                                                        alt={`${elem.car.carMarque} ${elem.car.carName}`}
+                                                    />
+                                                </Card.Header>
+                                            </Col>
 
-                                        {/* Car and Agency Info */}
-                                        <Col xs={12} md={4} className="py-3">
-                                            <Card.Title className="text-primary fs-5 pb-3">
-                                                Voiture: {elem.car.carMarque + " " + elem.car.carName}
-                                            </Card.Title>
-                                            <Card.Text className="fs-6 text-secondary my-2">
-                                                Carburant: {elem.car.carFuel}
-                                            </Card.Text>
-                                            <Card.Text className="fs-6 text-secondary my-2">
-                                                Agence: {elem.agency.nom + " " + elem.agency.prenom}
-                                            </Card.Text>
-                                            <Card.Text className="fs-6 text-secondary my-2">
-                                                E-mail Agence: {elem.agency.email}
-                                            </Card.Text>
+                                            {/* User and Reservation Info */}
+                                            <Col xs={12} md={4} className="py-3">
+                                                <Card.Title className="text-primary fs-5">
+                                                    Nom Client: {elem.user ? elem.user.nom + " " + elem.user.prenom : <p className="text-danger my-3">Utilisateur Supprimer</p>}
+                                                </Card.Title>
+                                                <Card.Text className="fs-6 text-secondary my-2">
+                                                    Tél Client: {elem.phoneNumber}
+                                                </Card.Text>
+                                                <Card.Text className="fs-6 text-secondary my-2">
+                                                    E-mail Client: {elem.user ? elem.user.email : <p className="text-danger my-2">E-mail Pas Disponible</p>}
+                                                </Card.Text>
+                                                <Card.Text className="fs-6 text-secondary my-2">
+                                                    Statut: <span className="bg-success p-2 rounded text-white">{elem.status}</span>
+                                                </Card.Text>
+                                                <Card.Text className="fs-6 text-secondary my-2">
+                                                    Prix Total: {elem.priceTotal} DH
+                                                </Card.Text>
+                                                <Card.Text className="fs-6 text-secondary my-2">
+                                                    Départ: {new Date(elem.timeStart).toLocaleDateString()}
+                                                </Card.Text>
+                                                <Card.Text className="fs-6 text-secondary my-2">
+                                                    Arrivée: {new Date(elem.timeEnd).toLocaleDateString()}
+                                                </Card.Text>
+                                                <Card.Text className="fs-6 text-secondary my-2">
+                                                    Durée Totale: {elem.totalDays} jours
+                                                </Card.Text>
+                                            </Col>
 
-                                            {/* the card footer */}
-                                            <Card.Footer className="bg-white">
-                                                <Card.Text className="fs-5 text-primary">Prix Par Jour: {elem.car.pricePerDay} DH/jour</Card.Text>
-                                            </Card.Footer>
-                                        </Col>
-                                    </Row>
-                                </Card>
+                                            {/* Car and Agency Info */}
+                                            <Col xs={12} md={4} className="py-3">
+                                                <Card.Title className="text-primary fs-5 pb-3">
+                                                    Voiture: {elem.car.carMarque + " " + elem.car.carName}
+                                                </Card.Title>
+                                                <Card.Text className="fs-6 text-secondary my-2">
+                                                    Carburant: {elem.car.carFuel}
+                                                </Card.Text>
+                                                <Card.Text className="fs-6 text-secondary my-2">
+                                                    Agence: {elem.agency.nom + " " + elem.agency.prenom}
+                                                </Card.Text>
+                                                <Card.Text className="fs-6 text-secondary my-2">
+                                                    E-mail Agence: {elem.agency.email}
+                                                </Card.Text>
 
-                            </Col>
-                        );
-                    })}
+                                                {/* the card footer */}
+                                                <Card.Footer className="bg-white">
+                                                    <Card.Text className="fs-5 text-primary">Prix Par Jour: {elem.car.pricePerDay} DH/jour</Card.Text>
+                                                </Card.Footer>
+                                            </Col>
+                                        </Row>
+                                    </Card>
+                                </Col>
+                            );
+                        })
+                    ) : (
+                        <div className="text-center">
+                            <h5 className="text-muted">Aucune réservation trouvée.</h5>
+                        </div>
+                    )}
                 </Container>
             </Row>
+
         </div>
     )
 }

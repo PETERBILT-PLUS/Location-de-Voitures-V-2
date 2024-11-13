@@ -35,12 +35,13 @@ const superAdminRouter_router_js_1 = __importDefault(require("./Routes/superAdmi
 const superAdminState_router_js_1 = __importDefault(require("./Routes/superAdminState.router.js"));
 (0, dotenv_1.config)();
 const PORT = process.env.PORT || 5000;
+const CLIENT_DOMAIN = process.env.CLIENT_DOMAIN;
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 socket_js_1.app.use((0, cookie_parser_1.default)());
 socket_js_1.app.use(express_1.default.json());
 socket_js_1.app.use((0, cors_1.default)({
     credentials: true,
-    origin: "http://localhost:5173", // Set this to your frontend's domain
+    origin: CLIENT_DOMAIN, // Set this to your frontend's domain
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 socket_js_1.app.use(body_parser_1.default.urlencoded({ extended: true }));

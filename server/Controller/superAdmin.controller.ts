@@ -98,9 +98,7 @@ export const getReservations = async (req: Request, res: Response) => {
     try {
         // Extract query parameters
         const skip: number = req.query.skip ? Number(req.query.skip) : 0;
-        const search = req.query.search ? req.query.search.toString().trim() : null;
-
-        console.log("Search query:", search); // Debugging: log search query
+        const search: string | null = req.query.search ? req.query.search.toString().trim() : null;
 
         let criteriaSearch = {}; // Initialize search criteria for reservations
 

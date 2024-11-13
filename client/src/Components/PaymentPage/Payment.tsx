@@ -23,9 +23,7 @@ function Payment() {
                 const res: AxiosResponse<any, any> = await axios.get(`${SERVER}/agent-state/get-payment-state`, { withCredentials: true });
                 if (res.data.success) {
                     setTryFree(res.data.tryFree);
-                }
-                console.log(res.data);
-                
+                }                
             } catch (error: any) {
                 if (axios.isAxiosError(error)) {
                     toast.warning(error.response?.data.message);

@@ -95,30 +95,33 @@ function SuperAdminUsers() {
                 <Row xs={1} md={2} className="g-4" style={{ height: "100vh", overflowY: "scroll" }} onScroll={handleScroll}>
                     {!!users.length && users.map((elem: any, index: number) => {
                         return (
-                            <Col key={index}>
-                                <Card className="w-100 bg-white shadow">
-                                    <Card.Header className="py-2">
-                                        <Row>
-                                            <Col xs={6} className="d-flex flex-row justify-content-center align-items-center">
-                                                <Card.Title>Nom: <span className="text-primary">{elem.nom} {elem.prenom}</span></Card.Title>
-                                            </Col>
-                                            <Col xs={6} className="d-flex flex-row justify-content-center align-items-center">
-                                                <Image src={elem.profilePicture} alt={elem.nom} style={{ width: "84px", height: "84px" }} />
-                                            </Col>
-                                        </Row>
-                                    </Card.Header>
-                                    <Card.Body className="d-flex flex-column justify-content-center align-items-center py-4 gap-3">
-                                        <Card.Text>E-mail: {elem.email}</Card.Text>
-                                        <Card.Text>Sexe: {elem.sexe}</Card.Text>
-                                    </Card.Body>
-                                    <Card.Footer className="d-flex flex-row justify-content-center align-items-center gap-4">
-                                        <button type="button" className="btn btn-danger w-50 py-2 fs-6 fs-md-5" onClick={() => deleteUser(elem._id)}>Supprimer</button>
-                                        <Link to={`/super-admin/get-user-reservations/${elem._id}`} className="w-50">
-                                            <button type="button" className="btn btn-primary w-100 py-2 fs-6 fs-md-5">{elem.reservations.length} {elem.reservations.length > 1 ? "Réservations" : "Réservation"}</button>
-                                        </Link>
-                                    </Card.Footer>
-                                </Card>
-                            </Col>
+                            <>
+                                <Col key={index}>
+                                    <Card className="w-100 bg-white shadow">
+                                        <Card.Header className="py-2">
+
+                                            <Row>
+                                                <Col xs={6} className="d-flex flex-row justify-content-center align-items-center">
+                                                    <Card.Title>Nom: <span className="text-primary">{elem.nom} {elem.prenom}</span></Card.Title>
+                                                </Col>
+                                                <Col xs={6} className="d-flex flex-row justify-content-center align-items-center">
+                                                    <Image src={elem.profilePicture} alt={elem.nom} style={{ width: "84px", height: "84px" }} />
+                                                </Col>
+                                            </Row>
+                                        </Card.Header>
+                                        <Card.Body className="d-flex flex-column justify-content-center align-items-center py-4 gap-3">
+                                            <Card.Text>E-mail: {elem.email}</Card.Text>
+                                            <Card.Text>Sexe: {elem.sexe}</Card.Text>
+                                        </Card.Body>
+                                        <Card.Footer className="d-flex flex-row justify-content-center align-items-center gap-4">
+                                            <button type="button" className="btn btn-danger w-50 py-2 fs-6 fs-md-5" onClick={() => deleteUser(elem._id)}>Supprimer</button>
+                                            <Link to={`/super-admin/get-user-reservations/${elem._id}`} className="w-50">
+                                                <button type="button" className="btn btn-primary w-100 py-2 fs-6 fs-md-5">{elem.reservations.length} {elem.reservations.length > 1 ? "Réservations" : "Réservation"}</button>
+                                            </Link>
+                                        </Card.Footer>
+                                    </Card>
+                                </Col>
+                            </>
                         );
                     })}
                 </Row>
