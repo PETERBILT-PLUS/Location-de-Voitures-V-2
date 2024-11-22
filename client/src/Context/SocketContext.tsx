@@ -38,7 +38,7 @@ const SocketContextProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             }
         }
 
-    }, []);
+    }, [agency, user]);
 
     return (
         <Context.Provider value={{ socket }}>{children}</Context.Provider>

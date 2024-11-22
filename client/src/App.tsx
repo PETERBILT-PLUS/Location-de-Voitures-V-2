@@ -36,7 +36,7 @@ import SuperAdminReservations from './Components/SuperAdminReservations/SuperAdm
 
 function App() {
   const initialOptions = {
-    clientId: "AYXgG14aJg2xs8JHSbgvpA1LMSAZZESeD8D8bPjZuUK5PyhNc8c5XN0489yQ35EX14IoEmNgy-G99i5F",
+    clientId: "AUhXr6owudUIJNmKjtEUvncWpcbnscL5Xrw1oj0ex8PUavA1sQcIc7QES-SJmX0eQkCtCrTvffptTk1I",
     currency: "USD",
     intent: "capture",
   };

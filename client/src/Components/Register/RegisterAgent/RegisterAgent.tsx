@@ -32,10 +32,6 @@ function RegisterAgent() {
     ];
 
     const onSubmit = async (values: any, action: any) => {
-        console.log(values);
-        console.log(errors);
-
-
         try {
             const res: AxiosResponse<any, any> = await axios.post(`${SERVER}/agent/register`, values, { withCredentials: true });
             if (res.data.success) {
@@ -43,9 +39,12 @@ function RegisterAgent() {
                 action.resetForm();
                 navigate("/login-agent");
             }
-        } catch (error) {
+        } catch (error: any) {
             if (axios.isAxiosError(error)) {
                 toast.warning(error.response?.data.message);
+            } else {
+                toast.error(error?.message);
+                console.error(error);
             }
         }
     };
