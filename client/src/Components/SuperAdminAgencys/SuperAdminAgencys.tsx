@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Card, Col, Container, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 // Define a type for the agency object
@@ -61,8 +61,10 @@ function SuperAdminAgencys() {
         const { offsetHeight, scrollTop, scrollHeight } = e.currentTarget;
 
         // Detect when the user reaches the bottom of the scrollable container
-        if (offsetHeight + scrollTop >= scrollHeight) {
+        if (offsetHeight + scrollTop >= scrollHeight - 10) {
             try {
+                console.log("working hahaha");
+                
                 const res: AxiosResponse<{ success: boolean, agencys: Agency[] }> = await axios.get(`${SERVER}/super-admin/get-agencys?skip=${agencys.length}`, { withCredentials: true });
                 if (res.data.success) {
                     setAgencys((prev: any) => [...prev, ...res.data.agencys]);
@@ -85,7 +87,9 @@ function SuperAdminAgencys() {
 
                 {/* Display loading spinner or the agencies list */}
                 {loading ? (
-                    <p>Loading...</p>
+                    <div className="min-vh-100 d-flex flex-direction-row justify-content-center align-items-center">
+                        <Spinner></Spinner>
+                    </div>
                 ) : (
                     <Row xs={1} md={2}>
                         {agencys.length > 0 ? (

@@ -45,7 +45,9 @@ function SuperAdminReservations() {
         try {
             const { scrollTop, scrollHeight, offsetHeight } = e.currentTarget;
 
-            if (scrollTop + offsetHeight >= scrollHeight) {
+            if (scrollTop + offsetHeight >= scrollHeight - 10) {
+                console.log("it's workin hahaha");
+                
                 const res: AxiosResponse<{ success: boolean, reservations: any[], message?: string }> = await axios.get(`${SERVER}/super-admin/get-reservations?skip=${reservations.length}&search=${search}`, { withCredentials: true });
                 if (res.data.success) {
                     setReservations((prev) => [...prev, ...res.data.reservations]);
@@ -71,9 +73,6 @@ function SuperAdminReservations() {
                 }
                 return;
             }
-
-            setSearch(value);
-            console.log(`Searching for: ${value}`);  // Debugging
 
             const res: AxiosResponse<{ success: boolean, reservations: any[], message?: string }> = await axios.get(`${SERVER}/super-admin/get-reservations?search=${value}`, { withCredentials: true });
 
@@ -105,7 +104,7 @@ function SuperAdminReservations() {
     }
 
     return (
-        <div className="py-5 min-vh-100 bg-light">
+        <div className="py-5 min-vh-100 bg-light mx-0" style={{ overflowY: "auto", height: "100vh", overflowX: "auto" }} onScroll={handleScroll}>
             <h1 className="fs-3 text-center pb-5 pt-3" style={{ color: "var(--lightBlue)" }}>Réservations</h1>
 
             <div className="bg-white shadow rounded mx-auto px-4 py-2 d-flex justify-content-center align-items-center" style={{ maxWidth: '600px' }}>
@@ -124,7 +123,7 @@ function SuperAdminReservations() {
             </div>
 
 
-            <Row className="py-5 row" xs={12} style={{ overflowY: "scroll", height: "600px" }} onScroll={handleScroll}>
+            <Row className="py-5 row mx-0" xs={12}>
                 <Container className="py-5">
                     {reservations.length > 0 ? (
                         reservations.map((elem: any, index: number) => {
