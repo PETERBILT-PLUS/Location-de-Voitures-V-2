@@ -66,6 +66,7 @@ function SuperAdminReservations() {
     const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         try {
             const value = e.target.value.trim();
+            setSearch(value);
             if (!value) {
                 const res: AxiosResponse<{ success: boolean, reservations: any[], message?: string }> = await axios.get(`${SERVER}/super-admin/get-reservations?search=${value}`, { withCredentials: true });
                 if (res.data.success) {
